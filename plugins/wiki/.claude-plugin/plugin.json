@@ -1,0 +1,9 @@
+{
+  "name": "wiki",
+  "version": "0.1.0",
+  "description": "Wiki operations: initialize, update, and validate a repository wiki",
+  "author": {
+    "name": "Carlos",
+    "url": "https://github.com/cangulo"
+  }
+}

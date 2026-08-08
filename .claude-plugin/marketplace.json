@@ -1,0 +1,20 @@
+{
+  "name": "cangulo-plugins",
+  "description": "Carlos' personal Claude Code plugins: wiki and ADR workflows",
+  "owner": {
+    "name": "Carlos",
+    "url": "https://github.com/cangulo"
+  },
+  "plugins": [
+    {
+      "name": "wiki",
+      "source": "./plugins/wiki",
+      "description": "Wiki operations: initialize, update, and validate a repository wiki"
+    },
+    {
+      "name": "adrs",
+      "source": "./plugins/adrs",
+      "description": "Spec-driven ADR workflow: create, validate, implement, and update ADRs"
+    }
+  ]
+}
