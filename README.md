@@ -9,9 +9,28 @@ It hosts two plugins, each exposing its operations as auto-invocable **skills**:
 | `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki |
 | `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow |
 
-> **Status:** the marketplace and plugin manifests are in place. The `wiki` and
-> `adrs` skills are delivered in follow-up phases — installing today registers
-> the plugins but the skills are added incrementally.
+## `wiki` — repository wiki, GitHub-wiki standard
+
+A three-skill workflow for authoring a repository wiki in a top-level `wiki/`
+directory that renders natively as the repo's **GitHub wiki**. The `shared/`
+folder is the single source of truth: `wiki-conventions.md` (the rules all three
+skills follow) and `publish-wiki.yml` (a reference workflow that syncs `wiki/`
+to `https://github.com/<owner>/<repo>.wiki.git`).
+
+| Skill | What it does |
+| ----- | ------------ |
+| `/wiki:init` | Scaffold a `wiki/` directory (`Home.md` + `_Sidebar.md`) and optionally add the publish workflow. |
+| `/wiki:update` | Add, edit, rename, or remove a page, keeping `_Sidebar.md` and internal links in sync. |
+| `/wiki:validate` | Deterministically check the whole `wiki/` directory against the conventions via `scripts/validate-wiki.py`. CI-gate friendly. |
+
+Conventions: a **flat** `wiki/` directory, hyphenated page filenames
+(`Getting-Started.md` → "Getting Started"), one `# H1` per page, required
+`Home.md` + `_Sidebar.md`, and `[[Page Title]]` wiki links. Run the validator
+directly to gate CI:
+
+```text
+python plugins/wiki/skills/validate/scripts/validate-wiki.py wiki
+```
 
 ## Install
 
@@ -43,11 +62,20 @@ or just describe your task and let Claude auto-invoke the matching skill:
 ```text
 claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # lists both plugins
+│   └── marketplace.json              # lists both plugins
 ├── plugins/
 │   ├── wiki/
-│   │   └── .claude-plugin/plugin.json
-│   └── adrs/
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── shared/
+│   │   │   ├── wiki-conventions.md    # rules all 3 skills follow
+│   │   │   └── publish-wiki.yml       # reference workflow: wiki/ -> .wiki.git
+│   │   └── skills/
+│   │       ├── init/SKILL.md
+│   │       ├── update/SKILL.md
+│   │       └── validate/
+│   │           ├── SKILL.md
+│   │           └── scripts/validate-wiki.py
+│   └── adrs/                          # delivered in its own PR
 │       └── .claude-plugin/plugin.json
 ├── README.md
 └── LICENSE
