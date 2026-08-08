@@ -1,0 +1,9 @@
+{
+  "name": "adrs",
+  "version": "0.1.0",
+  "description": "Spec-driven ADR workflow: create, validate, implement, and update ADRs",
+  "author": {
+    "name": "Carlos",
+    "url": "https://github.com/cangulo"
+  }
+}
