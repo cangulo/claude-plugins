@@ -12,9 +12,9 @@ One ADR is composed of **three files** that share the same stem
 
 | File                          | Role |
 | ----------------------------- | ---- |
-| `YYYYMMDD-title-summary.md`   | The **decision** — context, options, outcome, and the ADR **Status**. |
-| `YYYYMMDD-title-plan.md`      | The **plan** — the essential implementation to satisfy the decision. |
-| `YYYYMMDD-title-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
+| `YYYYMMDD-title-0-summary.md`   | The **decision** — context, options, outcome, and the ADR **Status**. |
+| `YYYYMMDD-title-1-plan.md`      | The **plan** — the essential implementation to satisfy the decision. |
+| `YYYYMMDD-title-2-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
 
 The skills always act on the trio as a unit: `init` scaffolds all three,
 `validate` checks all three, `implement` reads all three, and `update` edits
@@ -31,10 +31,12 @@ The stem is `YYYYMMDD-title`, or the optional **grouped** form
 * `NN` — *(grouped form only)* a zero-padded index ordering ADRs within the
   group (`01`, `02`, …).
 * `title` — a short `kebab-case` slug (lowercase letters, digits, hyphens).
-* Suffix — exactly one of `-summary`, `-plan`, `-followups`, then `.md`.
-* Simple example trio: `docs/adr/20260808-use-postgres-summary.md`,
-  `…-use-postgres-plan.md`, `…-use-postgres-followups.md`.
-* Grouped example: `docs/adr/20260808-auth-01-use-oauth-summary.md`
+* Suffix — exactly one of `-0-summary`, `-1-plan`, `-2-followups`, then `.md`.
+  The leading index (`0`/`1`/`2`) makes a directory listing sort in the logical
+  reading order: summary → plan → follow-ups.
+* Simple example trio: `docs/adr/20260808-use-postgres-0-summary.md`,
+  `…-use-postgres-1-plan.md`, `…-use-postgres-2-followups.md`.
+* Grouped example: `docs/adr/20260808-auth-01-use-oauth-0-summary.md`
   (group `auth`, index `01`, title `use-oauth`).
 
 ## 🧾 Summary front matter
@@ -63,7 +65,7 @@ The summary's `## Status` section MUST begin with exactly one of these values
 * `Rejected`  — considered and declined; kept for the record.
 * `Deprecated`— once accepted, no longer applicable.
 * `Superseded`— replaced by a later ADR. SHOULD be written as
-  `Superseded by [YYYYMMDD-title](YYYYMMDD-title-summary.md)`.
+  `Superseded by [YYYYMMDD-title](YYYYMMDD-title-0-summary.md)`.
 
 ## 📏 File length limits
 
@@ -148,8 +150,8 @@ Given any one path of a trio (any of the three files, or the shared
 `YYYYMMDD-title` stem), the validator resolves the whole trio and reports an
 ERROR when any of the following fail:
 
-1. All three files (`-summary`, `-plan`, `-followups`) exist for the stem.
-2. Each filename matches `YYYYMMDD-<kebab-stem>-{summary,plan,followups}.md` with a
+1. All three files (`-0-summary`, `-1-plan`, `-2-followups`) exist for the stem.
+2. Each filename matches `YYYYMMDD-<kebab-stem>-{0-summary,1-plan,2-followups}.md` with a
    real `YYYYMMDD` date (covers both the simple and grouped forms).
 3. Each file has a level-1 `# ...` title as its first heading.
 4. Every required `##` section for that file is present and non-empty.

@@ -18,9 +18,9 @@ when several ADRs share an iteration:
 
 | File | Role |
 | ---- | ---- |
-| `<stem>-summary.md` | The **decision** — context, options, outcome, and Status. |
-| `<stem>-plan.md` | The **plan** — the essential implementation (approach and steps). |
-| `<stem>-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
+| `<stem>-0-summary.md` | The **decision** — context, options, outcome, and Status. |
+| `<stem>-1-plan.md` | The **plan** — the essential implementation (approach and steps). |
+| `<stem>-2-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
 
 The `shared/` folder is the single source of truth: `adr-summary-template.md`,
 `adr-plan-template.md`, `adr-followups-template.md` (what `init` scaffolds from)
@@ -54,7 +54,7 @@ Files are length-capped to stay reviewable: **summary ≤ 350**, **follow-ups �
 a full code preview). Run the validator directly to gate CI:
 
 ```text
-python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-summary.md
+python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-0-summary.md
 ```
 
 ## 📦 Install
@@ -78,7 +78,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 /wiki:init
-/adrs:validate docs/adr/20260808-use-postgres-summary.md
+/adrs:validate docs/adr/20260808-use-postgres-0-summary.md
 /adrs:implement docs/adr/20260808-use-postgres
 ```
 

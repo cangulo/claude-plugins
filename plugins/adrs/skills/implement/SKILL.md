@@ -21,7 +21,7 @@ that edits application code.
    is not schema-valid, stop and ask the user to fix it (via `adrs:update`)
    before implementing.
 
-3. **Check the Status** in `<stem>-summary.md`.
+3. **Check the Status** in `<stem>-0-summary.md`.
    - `Accepted`: proceed.
    - `Proposed`: not yet agreed. Do **not** implement silently — confirm the ADR
      is approved and offer to move it to `Accepted` via `adrs:update` first.

@@ -1,10 +1,10 @@
 # 🗂️ Follow-ups — Short title
 
 > ADR **YYYYMMDD-title** · this is the **follow-ups** list.
-> Related: [summary](YYYYMMDD-title-summary.md) · [plan](YYYYMMDD-title-plan.md).
+> Related: [summary](YYYYMMDD-title-0-summary.md) · [plan](YYYYMMDD-title-1-plan.md).
 >
 > This file tracks **follow-up action items that fall outside the essential
-> implementation** — which the [plan](YYYYMMDD-title-plan.md) covers. Use it for
+> implementation** — which the [plan](YYYYMMDD-title-1-plan.md) covers. Use it for
 > anything worth remembering but not part of the core build: bugs found, gaps,
 > improvements, and nice-to-haves. `adrs:implement` does **not** build these;
 > they are tracked here for later.

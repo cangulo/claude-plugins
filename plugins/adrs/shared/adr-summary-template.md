@@ -14,7 +14,7 @@ group: ""                # optional — iteration slug shared by related ADRs;
 # 📝 Short title of the decision
 
 > ADR **YYYYMMDD-title** · this is the **summary** (the decision).
-> Related: [plan](YYYYMMDD-title-plan.md) · [follow-ups](YYYYMMDD-title-followups.md).
+> Related: [plan](YYYYMMDD-title-1-plan.md) · [follow-ups](YYYYMMDD-title-2-followups.md).
 > Keep this file under **350 lines**.
 
 ## 🚦 Status
@@ -23,7 +23,7 @@ Proposed
 
 <!--
 Allowed values: Proposed | Accepted | Rejected | Deprecated | Superseded
-When superseding, write: "Superseded by [YYYYMMDD-title](YYYYMMDD-title-summary.md)".
+When superseding, write: "Superseded by [YYYYMMDD-title](YYYYMMDD-title-0-summary.md)".
 `adrs:init` always creates the summary as Proposed. Transitions happen via `adrs:update`.
 -->
 
