@@ -2,16 +2,17 @@
 """Validate an ADR trio against the ADR schema.
 
 One ADR is three files sharing the stem ``YYYYMMDD-title``:
-``-summary.md``, ``-plan.md``, and ``-followups.md``. Given a path to any one of
-them (or the bare stem), this validates the whole trio. The rules mirror
-``shared/adr-schema.md`` (the single source of truth).
+``-0-summary.md``, ``-1-plan.md``, and ``-2-followups.md``. The numeric index
+keeps a directory listing in the logical summary -> plan -> followups order.
+Given a path to any one of them (or the bare stem), this validates the whole
+trio. The rules mirror ``shared/adr-schema.md`` (the single source of truth).
 
 Exits 0 when the trio is valid, 1 when it has validation errors, and 2 on
 usage/IO errors. Every problem is printed on its own line so the output can gate
 CI.
 
 Usage:
-    python validate-adr.py docs/adr/20260808-use-postgres-summary.md
+    python validate-adr.py docs/adr/20260808-use-postgres-0-summary.md
     python validate-adr.py docs/adr/20260808-use-postgres        # bare stem
 """
 from __future__ import annotations
@@ -23,6 +24,10 @@ import re
 import sys
 
 ROLES = ("summary", "plan", "followups")
+
+# On-disk suffix per role. The leading index keeps a directory listing in the
+# logical order: `0-summary` sorts before `1-plan` before `2-followups`.
+ROLE_SUFFIX = {"summary": "0-summary", "plan": "1-plan", "followups": "2-followups"}
 
 REQUIRED_SECTIONS = {
     "summary": [
@@ -64,8 +69,9 @@ def derive_stem(path):
     base = os.path.basename(path)
     base = re.sub(r"\.md$", "", base, flags=re.IGNORECASE)
     for role in ROLES:
-        if base.endswith("-" + role):
-            base = base[: -(len(role) + 1)]
+        suffix = "-" + ROLE_SUFFIX[role]
+        if base.endswith(suffix):
+            base = base[: -len(suffix)]
             break
     return directory, base
 
@@ -160,8 +166,9 @@ def link_to_stem(entry):
     e = os.path.basename(e.split("#", 1)[0].strip())
     e = re.sub(r"\.md$", "", e, flags=re.IGNORECASE)
     for role in ROLES:
-        if e.endswith("-" + role):
-            return e[: -(len(role) + 1)]
+        suffix = "-" + ROLE_SUFFIX[role]
+        if e.endswith(suffix):
+            return e[: -len(suffix)]
     return e
 
 
@@ -179,7 +186,9 @@ def validate_summary_metadata(text, path, errors):
         entry = str(entry).strip()
         if not entry:
             continue
-        target = os.path.join(directory, link_to_stem(entry) + "-summary.md")
+        target = os.path.join(
+            directory, link_to_stem(entry) + "-" + ROLE_SUFFIX["summary"] + ".md"
+        )
         if not os.path.isfile(target):
             errors.append(
                 f"ERROR: {path}: continuation_of references '{entry}' but "
@@ -458,7 +467,7 @@ def validate(input_path):
             errors.append(f"ERROR: '{m.group(1)}' is not a real YYYYMMDD date")
 
     for role in ROLES:
-        path = os.path.join(directory, f"{stem}-{role}.md")
+        path = os.path.join(directory, f"{stem}-{ROLE_SUFFIX[role]}.md")
         if not os.path.isfile(path):
             errors.append(f"ERROR: missing trio file: '{path}'")
             continue

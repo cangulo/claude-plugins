@@ -13,7 +13,7 @@ always validates the whole trio.
 ## 📋 Steps
 
 1. **Resolve the target ADR.** Use the path the user provided — it may be any
-   one of the trio files (e.g. `docs/adr/20260808-use-postgres-plan.md`) or the
+   one of the trio files (e.g. `docs/adr/20260808-use-postgres-1-plan.md`) or the
    bare stem (`docs/adr/20260808-use-postgres`). The script derives the stem and
    checks all three files. If no ADR is given, ask which one to validate.
 
