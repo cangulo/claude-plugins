@@ -1,19 +1,60 @@
-# claude-plugins
+# 🧩 claude-plugins
 
 Personal [Claude Code plugin](https://docs.claude.com/en/docs/claude-code/plugins) marketplace by [@cangulo](https://github.com/cangulo).
 
 It hosts two plugins, each exposing its operations as auto-invocable **skills**:
 
-| Plugin | Skills | Purpose |
-| ------ | ------ | ------- |
-| `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki |
-| `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow |
+| Plugin | Skills | Purpose | Status |
+| ------ | ------ | ------- | ------ |
+| `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow | ✅ available |
+| `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki | 🚧 coming next |
 
-> **Status:** the marketplace and plugin manifests are in place. The `wiki` and
-> `adrs` skills are delivered in follow-up phases — installing today registers
-> the plugins but the skills are added incrementally.
+## 📐 `adrs` — spec-driven ADR workflow
 
-## Install
+A four-skill workflow that treats an Architecture Decision Record as the
+contract for a change. **One ADR is a trio of files** sharing a stem under
+`docs/adr/` — `YYYYMMDD-title`, or the grouped `YYYYMMDD-<group>-<NN>-<title>`
+when several ADRs share an iteration:
+
+| File | Role |
+| ---- | ---- |
+| `<stem>-summary.md` | The **decision** — context, options, outcome, and Status. |
+| `<stem>-plan.md` | The **implementation plan** — approach and steps. |
+| `<stem>-backlog.md` | The **action items** — an overview table plus per-group detail. |
+
+The `shared/` folder is the single source of truth: `adr-summary-template.md`,
+`adr-plan-template.md`, `adr-backlog-template.md` (what `init` scaffolds from)
+and `adr-schema.md` (what `validate` checks against).
+
+| Skill | What it does |
+| ----- | ------------ |
+| `/adrs:init` | Scaffold a new ADR trio, Status `Proposed`. **Spec only — writes no implementation code.** |
+| `/adrs:validate <path>` | Deterministically check the whole trio against the schema via `scripts/validate-adr.py`. Pass any trio file or the stem. CI-gate friendly. |
+| `/adrs:implement <path>` | The agentic step: read an accepted trio (summary + plan + backlog) as the contract and make the repo changes it specifies. |
+| `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage backlog items, keeping the trio schema-valid. |
+
+The **summary** carries the ADR Status (`Proposed`, `Accepted`, `Rejected`,
+`Deprecated`, `Superseded`) plus front matter including `tags`,
+`continuation_of`, and `group`. The validator resolves `continuation_of` and
+`Superseded by [...]` links to make sure the referenced ADRs exist.
+
+The **backlog** opens with an `Overview` table — `Group | ID | Title | Source |
+Status` — then a section per group (`Bugs`, `Gaps`, `Improvements`,
+`Nice-to-have`) where each item is a `### <ID> — <Title>` entry with
+`**Description:**`, `**Source:**`, `**Status:**`, and an optional
+`**Status reason:**`. IDs are per-group (`B1`, `G2`, `I1`, `N1`); `Source` is
+`human` / `review` / `agent`; item `Status` is `accepted` / `out-of-the-scope`.
+Every Overview row has a matching detail entry, and their Source/Status agree.
+
+Files are length-capped to stay reviewable: **summary ≤ 350**, **backlog ≤ 350**,
+**plan ≤ 600** lines (the plan captures the approach and where changes land, not
+a full code preview). Run the validator directly to gate CI:
+
+```text
+python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-summary.md
+```
+
+## 📦 Install
 
 ```text
 /plugin marketplace add cangulo/claude-plugins
@@ -27,33 +68,45 @@ Works in both Claude Desktop and the Claude Code CLI.
 > `claude-*` names), so installs use the `@cangulo-plugins` suffix. The repo is
 > still `cangulo/claude-plugins`.
 
-## Usage
+## ▶️ Usage
 
 Once a plugin is installed, invoke a skill explicitly with `/<plugin>:<skill>`,
 or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 /wiki:init
-/adrs:validate docs/adr/0007-x.md
-/adrs:implement docs/adr/0007-x.md
+/adrs:validate docs/adr/20260808-use-postgres-summary.md
+/adrs:implement docs/adr/20260808-use-postgres
 ```
 
-## Layout
+## 🗂️ Layout
 
 ```text
 claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # lists both plugins
+│   └── marketplace.json              # lists both plugins
 ├── plugins/
-│   ├── wiki/
-│   │   └── .claude-plugin/plugin.json
-│   └── adrs/
+│   ├── adrs/
+│   │   ├── .claude-plugin/plugin.json
+│   │   ├── shared/
+│   │   │   ├── adr-summary-template.md   # decision skeleton init scaffolds from
+│   │   │   ├── adr-plan-template.md      # implementation-plan skeleton
+│   │   │   ├── adr-backlog-template.md   # grouped action-items skeleton
+│   │   │   └── adr-schema.md             # trio contract: sections, Status, backlog vocab
+│   │   └── skills/
+│   │       ├── init/SKILL.md
+│   │       ├── validate/
+│   │       │   ├── SKILL.md
+│   │       │   └── scripts/validate-adr.py
+│   │       ├── implement/SKILL.md
+│   │       └── update/SKILL.md
+│   └── wiki/                          # coming in the next phase
 │       └── .claude-plugin/plugin.json
 ├── README.md
 └── LICENSE
 ```
 
-## Development
+## 🛠️ Development
 
 While iterating on a plugin, run Claude Code with the local plugin dir so
 `SKILL.md` edits take effect live, without reinstalling from the marketplace:
@@ -68,6 +121,6 @@ Validate a plugin manifest before committing:
 claude plugin validate ./plugins/adrs
 ```
 
-## License
+## 📄 License
 
 [MIT](./LICENSE)
