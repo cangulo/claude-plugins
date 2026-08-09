@@ -16,19 +16,19 @@ whichever file(s) a change affects and always leaving the trio valid against
 
 2. **Identify the change** and edit the right file:
 
-   - **Status transition** (in `<stem>-summary.md`) — e.g. `Proposed → Accepted`,
+   - **Status transition** (in `<stem>-0-summary.md`) — e.g. `Proposed → Accepted`,
      `Accepted → Deprecated`. Update the `## Status` section and the front-matter
      `status` to an allowed value.
-   - **Supersede** (in `<stem>-summary.md`) — set Status to
-     `Superseded by [YYYYMMDD-title](YYYYMMDD-title-summary.md)` pointing at the
+   - **Supersede** (in `<stem>-0-summary.md`) — set Status to
+     `Superseded by [YYYYMMDD-title](YYYYMMDD-title-0-summary.md)` pointing at the
      replacement. If the replacement ADR does not exist yet, offer to create it
      with `adrs:init` first, then cross-reference both.
    - **Revise the decision** (`summary`) or **the approach/steps** (`plan`) —
      amend the relevant sections. Preserve decision history; do not silently
      rewrite an accepted decision — note material changes.
-   - **Metadata** (in `<stem>-summary.md` front matter) — update `tags`,
+   - **Metadata** (in `<stem>-0-summary.md` front matter) — update `tags`,
      `continuation_of`, or `group` as needed.
-   - **Follow-up triage** (in `<stem>-followups.md`) — record work *outside* the
+   - **Follow-up triage** (in `<stem>-2-followups.md`) — record work *outside* the
      essential implementation. To **add** an item: pick the right group (`Bugs`,
      `Gaps`, `Improvements`, `Nice-to-have`), assign the next sequential ID for
      that group's prefix (`B`/`G`/`I`/`N`), add an `Overview` row

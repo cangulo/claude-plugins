@@ -11,8 +11,8 @@ application code, run builds, or implement the decision. Implementation is the
 separate `adrs:implement` step.
 
 An ADR is a trio sharing the stem `YYYYMMDD-title`:
-`YYYYMMDD-title-summary.md`, `YYYYMMDD-title-plan.md`,
-`YYYYMMDD-title-followups.md`.
+`YYYYMMDD-title-0-summary.md`, `YYYYMMDD-title-1-plan.md`,
+`YYYYMMDD-title-2-followups.md`.
 
 ## 📋 Steps
 
@@ -32,16 +32,16 @@ An ADR is a trio sharing the stem `YYYYMMDD-title`:
 3. **Scaffold the three files** from the templates, filling each in from what
    you know and replacing every `YYYYMMDD-title` placeholder (including the
    cross-links) with the real stem:
-   - `docs/adr/<stem>-summary.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-summary-template.md`.
+   - `docs/adr/<stem>-0-summary.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-summary-template.md`.
      Keep **Status `Proposed`** (both front-matter and the `## Status` section).
      Fill the front matter: `date`, `deciders`, and `tags`; set `group` if this
      is a grouped ADR, and `continuation_of` if it continues an earlier ADR.
      Draft Context, Requirements, Considered Options, the proposed Decision
      Outcome, and Consequences. Remove the template's HTML guidance comments.
-   - `docs/adr/<stem>-plan.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-plan-template.md`.
+   - `docs/adr/<stem>-1-plan.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-plan-template.md`.
      Draft the Approach and Steps for the **essential implementation** of the
      decision.
-   - `docs/adr/<stem>-followups.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-followups-template.md`.
+   - `docs/adr/<stem>-2-followups.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-followups-template.md`.
      This tracks follow-up items **outside** the essential implementation (the
      plan) — leave it mostly empty at init unless you already know of some. Keep
      the `Overview` table and the four groups (Bugs, Gaps, Improvements,
@@ -61,7 +61,7 @@ An ADR is a trio sharing the stem `YYYYMMDD-title`:
    changes land, not a full preview of the code.
 
 4. **Validate.** Run `adrs:validate` on the new ADR (or
-   `python "${CLAUDE_PLUGIN_ROOT}/skills/validate/scripts/validate-adr.py" docs/adr/<stem>-summary.md`)
+   `python "${CLAUDE_PLUGIN_ROOT}/skills/validate/scripts/validate-adr.py" docs/adr/<stem>-0-summary.md`)
    and fix any reported problems so the whole trio is schema-valid.
 
 5. **Report.** Tell the user the three file paths, that the Status is

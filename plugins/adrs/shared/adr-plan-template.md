@@ -2,12 +2,12 @@
 
 > ADR **YYYYMMDD-title** · this is the **plan** — the **essential
 > implementation** to satisfy the decision. `adrs:implement` builds this.
-> Related: [summary](YYYYMMDD-title-summary.md) · [follow-ups](YYYYMMDD-title-followups.md).
+> Related: [summary](YYYYMMDD-title-0-summary.md) · [follow-ups](YYYYMMDD-title-2-followups.md).
 >
 > Keep this under **600 lines**: capture the process, steps, technical approach,
 > and *where* changes land — not a full preview of the code to be written.
 > Work that falls outside the essential implementation goes in the
-> [follow-ups](YYYYMMDD-title-followups.md) file, not here.
+> [follow-ups](YYYYMMDD-title-2-followups.md) file, not here.
 
 ## 🧩 Approach
 
