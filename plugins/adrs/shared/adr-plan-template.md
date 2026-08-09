@@ -1,10 +1,13 @@
 # 🛠️ Implementation plan — Short title
 
-> ADR **YYYYMMDD-title** · this is the **plan** (how the decision gets built).
-> Related: [summary](YYYYMMDD-title-summary.md) · [backlog](YYYYMMDD-title-backlog.md).
+> ADR **YYYYMMDD-title** · this is the **plan** — the **essential
+> implementation** to satisfy the decision. `adrs:implement` builds this.
+> Related: [summary](YYYYMMDD-title-summary.md) · [follow-ups](YYYYMMDD-title-followups.md).
 >
 > Keep this under **600 lines**: capture the process, steps, technical approach,
 > and *where* changes land — not a full preview of the code to be written.
+> Work that falls outside the essential implementation goes in the
+> [follow-ups](YYYYMMDD-title-followups.md) file, not here.
 
 ## 🧩 Approach
 

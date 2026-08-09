@@ -1,6 +1,6 @@
 ---
 name: init
-description: Create a new Architecture Decision Record (ADR) as a spec. Use when the user wants to start, draft, scaffold, or open a new ADR / architecture decision, or asks to record a decision under docs/adr. Scaffolds the ADR trio (summary + plan + backlog) with Status "Proposed" — it never writes implementation code.
+description: Create a new Architecture Decision Record (ADR) as a spec. Use when the user wants to start, draft, scaffold, or open a new ADR / architecture decision, or asks to record a decision under docs/adr. Scaffolds the ADR trio (summary + plan + follow-ups) with Status "Proposed" — it never writes implementation code.
 ---
 
 # 🚀 adrs:init — scaffold a new ADR trio
@@ -11,7 +11,8 @@ application code, run builds, or implement the decision. Implementation is the
 separate `adrs:implement` step.
 
 An ADR is a trio sharing the stem `YYYYMMDD-title`:
-`YYYYMMDD-title-summary.md`, `YYYYMMDD-title-plan.md`, `YYYYMMDD-title-backlog.md`.
+`YYYYMMDD-title-summary.md`, `YYYYMMDD-title-plan.md`,
+`YYYYMMDD-title-followups.md`.
 
 ## 📋 Steps
 
@@ -38,10 +39,13 @@ An ADR is a trio sharing the stem `YYYYMMDD-title`:
      Draft Context, Requirements, Considered Options, the proposed Decision
      Outcome, and Consequences. Remove the template's HTML guidance comments.
    - `docs/adr/<stem>-plan.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-plan-template.md`.
-     Draft the Approach and Steps for implementing the decision.
-   - `docs/adr/<stem>-backlog.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-backlog-template.md`.
-     Keep the `Overview` table and the four groups (Bugs, Gaps, Improvements,
-     Nice-to-have). For each known item: add an `Overview` row
+     Draft the Approach and Steps for the **essential implementation** of the
+     decision.
+   - `docs/adr/<stem>-followups.md` from `${CLAUDE_PLUGIN_ROOT}/shared/adr-followups-template.md`.
+     This tracks follow-up items **outside** the essential implementation (the
+     plan) — leave it mostly empty at init unless you already know of some. Keep
+     the `Overview` table and the four groups (Bugs, Gaps, Improvements,
+     Nice-to-have). For each known follow-up: add an `Overview` row
      (`Group | ID | Title | Source | Status`) **and** a matching
      `### <ID> — <Title>` detail entry under its group with `**Description:**`,
      `**Source:**`, `**Status:**`, and an optional `**Status reason:**`. The
@@ -53,8 +57,8 @@ An ADR is a trio sharing the stem `YYYYMMDD-title`:
 
    Use clearly-marked `TODO` placeholders for anything genuinely unknown rather
    than inventing facts. Keep each file within its line limit: summary ≤ 350,
-   backlog ≤ 350, plan ≤ 600 — the plan captures the approach and where changes
-   land, not a full preview of the code.
+   follow-ups ≤ 350, plan ≤ 600 — the plan captures the approach and where
+   changes land, not a full preview of the code.
 
 4. **Validate.** Run `adrs:validate` on the new ADR (or
    `python "${CLAUDE_PLUGIN_ROOT}/skills/validate/scripts/validate-adr.py" docs/adr/<stem>-summary.md`)

@@ -1,11 +1,11 @@
 ---
 name: validate
-description: Validate an Architecture Decision Record (ADR) against the ADR schema. Use when the user asks to validate, check, lint, or verify an ADR under docs/adr, or wants to confirm an ADR's summary, plan, and backlog files have the required structure, a valid Status, and well-formed backlog items.
+description: Validate an Architecture Decision Record (ADR) against the ADR schema. Use when the user asks to validate, check, lint, or verify an ADR under docs/adr, or wants to confirm an ADR's summary, plan, and follow-ups files have the required structure, a valid Status, and well-formed follow-up items.
 ---
 
 # 🔍 adrs:validate — check an ADR trio against the schema
 
-Validate one ADR — its `summary`, `plan`, and `backlog` files — against
+Validate one ADR — its `summary`, `plan`, and `follow-ups` files — against
 `${CLAUDE_PLUGIN_ROOT}/shared/adr-schema.md`. Validation is deterministic via
 the bundled script so it can also gate CI. The three files are one unit, so this
 always validates the whole trio.
@@ -27,12 +27,12 @@ always validates the whole trio.
    `VALID: <stem>` when the whole trio conforms; it exits non-zero and prints
    `INVALID: <stem>` followed by one `- ERROR: …` line per problem (missing trio
    file, bad name/date, missing or empty section, invalid summary Status, or a
-   backlog problem: an Overview row with a bad Group/ID/Source/Status, an item ID
-   whose prefix doesn't match its group, an Overview row and detail entry that
+   follow-ups problem: an Overview row with a bad Group/ID/Source/Status, an item
+   ID whose prefix doesn't match its group, an Overview row and detail entry that
    don't correspond, a detail entry missing its Description/Source/Status or
    disagreeing with the Overview), a metadata problem (a `continuation_of` or
    `Superseded by` link that doesn't resolve, or a non-array `tags`), or a file
-   over its line limit (summary/backlog ≤ 350, plan ≤ 600).
+   over its line limit (summary/follow-ups ≤ 350, plan ≤ 600).
 
 3. **Report the result.**
    - If valid: tell the user the ADR passes.

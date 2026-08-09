@@ -13,8 +13,8 @@ One ADR is composed of **three files** that share the same stem
 | File                          | Role |
 | ----------------------------- | ---- |
 | `YYYYMMDD-title-summary.md`   | The **decision** — context, options, outcome, and the ADR **Status**. |
-| `YYYYMMDD-title-plan.md`      | The **implementation plan** — how the decision gets built. |
-| `YYYYMMDD-title-backlog.md`   | The **action items** — grouped, sourced, and triaged work. |
+| `YYYYMMDD-title-plan.md`      | The **plan** — the essential implementation to satisfy the decision. |
+| `YYYYMMDD-title-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
 
 The skills always act on the trio as a unit: `init` scaffolds all three,
 `validate` checks all three, `implement` reads all three, and `update` edits
@@ -31,9 +31,9 @@ The stem is `YYYYMMDD-title`, or the optional **grouped** form
 * `NN` — *(grouped form only)* a zero-padded index ordering ADRs within the
   group (`01`, `02`, …).
 * `title` — a short `kebab-case` slug (lowercase letters, digits, hyphens).
-* Suffix — exactly one of `-summary`, `-plan`, `-backlog`, then `.md`.
+* Suffix — exactly one of `-summary`, `-plan`, `-followups`, then `.md`.
 * Simple example trio: `docs/adr/20260808-use-postgres-summary.md`,
-  `…-use-postgres-plan.md`, `…-use-postgres-backlog.md`.
+  `…-use-postgres-plan.md`, `…-use-postgres-followups.md`.
 * Grouped example: `docs/adr/20260808-auth-01-use-oauth-summary.md`
   (group `auth`, index `01`, title `use-oauth`).
 
@@ -71,7 +71,7 @@ Each file has a maximum physical line count, keeping every doc focused and
 reviewable:
 
 * **summary** — at most **350** lines.
-* **backlog** — at most **350** lines.
+* **follow-ups** — at most **350** lines.
 * **plan** — at most **600** lines. The plan gets more room because it captures
   the *process, steps, technical approach, and where changes land* — not a full
   preview of the code to be written. If a plan is pushing the limit, it is
@@ -85,14 +85,14 @@ level-2 (`##`) sections, each present and non-empty:
 * **summary** — `Status`, `Context and Problem Statement`, `Requirements`,
   `Considered Options`, `Decision Outcome`, `Consequences`.
 * **plan** — `Approach`, `Steps`.
-* **backlog** — `Overview`, `Bugs`, `Gaps`, `Improvements`, `Nice-to-have`.
+* **follow-ups** — `Overview`, `Bugs`, `Gaps`, `Improvements`, `Nice-to-have`.
 
 Additional sections (e.g. `### Pros and Cons of the Options`, `Risks and
 Mitigations`, front-matter) are allowed and ignored by validation.
 
-## 🗂️ Backlog item format
+## 🗂️ Follow-up item format
 
-The backlog has an **Overview** table followed by one section per group. Every
+The follow-ups file has an **Overview** table followed by one section per group. Every
 item appears once in the Overview and once as a detail subsection.
 
 **Overview** — a five-column table listing every action item:
@@ -134,7 +134,7 @@ An entry's `Source` and `Status` must **match its Overview row**.
 Field vocabulary:
 
 * **ID** — per-group prefix + number: **B**ugs → `B1`, `B2`; **G**aps → `G1`;
-  **I**mprovements → `I1`; **N**ice-to-have → `N1`. Unique across the backlog.
+  **I**mprovements → `I1`; **N**ice-to-have → `N1`. Unique across the follow-ups file.
 * **Source** — where the item came from: `human`, `review`, or `agent`.
 * **Status** — its triage state: `accepted` or `out-of-the-scope`.
 
@@ -148,21 +148,21 @@ Given any one path of a trio (any of the three files, or the shared
 `YYYYMMDD-title` stem), the validator resolves the whole trio and reports an
 ERROR when any of the following fail:
 
-1. All three files (`-summary`, `-plan`, `-backlog`) exist for the stem.
-2. Each filename matches `YYYYMMDD-<kebab-stem>-{summary,plan,backlog}.md` with a
+1. All three files (`-summary`, `-plan`, `-followups`) exist for the stem.
+2. Each filename matches `YYYYMMDD-<kebab-stem>-{summary,plan,followups}.md` with a
    real `YYYYMMDD` date (covers both the simple and grouped forms).
 3. Each file has a level-1 `# ...` title as its first heading.
 4. Every required `##` section for that file is present and non-empty.
 5. The summary's `## Status` first content line starts with an allowed value.
-6. In the backlog: every Overview row has a valid `Group`, an `ID` whose prefix
+6. In the follow-ups file: every Overview row has a valid `Group`, an `ID` whose prefix
    matches that group, an allowed `Source`, and an allowed `Status`; every
    Overview ID has a matching `### <ID> …` detail entry in the right group (and
    vice versa); and IDs are unique.
-7. Each backlog detail entry has a non-empty `Description`, an allowed `Source`,
+7. Each follow-up detail entry has a non-empty `Description`, an allowed `Source`,
    and an allowed `Status`, and its `Source`/`Status` match its Overview row.
 8. Metadata (when present): `tags` is a YAML array, and every `continuation_of`
    reference and `Superseded by [...]` link resolves to an existing summary file.
-9. No file exceeds its line limit: 350 (summary), 350 (backlog), 600 (plan).
+9. No file exceeds its line limit: 350 (summary), 350 (followups), 600 (plan).
 
 The script exits `0` when the whole trio is valid and non-zero when any error is
 found, printing each problem on its own line so it can gate CI.
