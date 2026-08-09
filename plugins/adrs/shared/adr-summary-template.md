@@ -14,7 +14,7 @@ group: ""                # optional — iteration slug shared by related ADRs;
 # 📝 Short title of the decision
 
 > ADR **YYYYMMDD-title** · this is the **summary** (the decision).
-> Related: [plan](YYYYMMDD-title-plan.md) · [backlog](YYYYMMDD-title-backlog.md).
+> Related: [plan](YYYYMMDD-title-plan.md) · [follow-ups](YYYYMMDD-title-followups.md).
 > Keep this file under **350 lines**.
 
 ## 🚦 Status

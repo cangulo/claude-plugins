@@ -1,12 +1,12 @@
 ---
 name: update
-description: Update an existing Architecture Decision Record (ADR) — change its Status, supersede it, revise the plan, or triage backlog items. Use when the user asks to accept, reject, deprecate, supersede, amend, or edit an existing ADR under docs/adr, or to add/triage items in its backlog, while keeping the trio schema-valid.
+description: Update an existing Architecture Decision Record (ADR) — change its Status, supersede it, revise the plan, or triage follow-up items. Use when the user asks to accept, reject, deprecate, supersede, amend, or edit an existing ADR under docs/adr, or to add/triage items in its follow-ups, while keeping the trio schema-valid.
 ---
 
 # ✏️ adrs:update — revise an existing ADR
 
-Amend an existing ADR's trio (`summary`, `plan`, `backlog`), touching whichever
-file(s) a change affects and always leaving the trio valid against
+Amend an existing ADR's trio (`summary`, `plan`, `follow-ups`), touching
+whichever file(s) a change affects and always leaving the trio valid against
 `${CLAUDE_PLUGIN_ROOT}/shared/adr-schema.md`.
 
 ## 📋 Steps
@@ -28,10 +28,11 @@ file(s) a change affects and always leaving the trio valid against
      rewrite an accepted decision — note material changes.
    - **Metadata** (in `<stem>-summary.md` front matter) — update `tags`,
      `continuation_of`, or `group` as needed.
-   - **Backlog triage** (in `<stem>-backlog.md`) — to **add** an item: pick the
-     right group (`Bugs`, `Gaps`, `Improvements`, `Nice-to-have`), assign the
-     next sequential ID for that group's prefix (`B`/`G`/`I`/`N`), add an
-     `Overview` row (`Group | ID | Title | Source | Status`) **and** a matching
+   - **Follow-up triage** (in `<stem>-followups.md`) — record work *outside* the
+     essential implementation. To **add** an item: pick the right group (`Bugs`,
+     `Gaps`, `Improvements`, `Nice-to-have`), assign the next sequential ID for
+     that group's prefix (`B`/`G`/`I`/`N`), add an `Overview` row
+     (`Group | ID | Title | Source | Status`) **and** a matching
      `### <ID> — <Title>` detail entry with `**Description:**`, `**Source:**`,
      `**Status:**`, and an optional `**Status reason:**`. To **re-triage** an
      item, change its `Status` (`accepted` / `out-of-the-scope`) in **both** the
@@ -39,7 +40,7 @@ file(s) a change affects and always leaving the trio valid against
      detail in sync — every ID must appear in both.
 
 3. **Keep the trio schema-valid.** Do not drop any required section or leave one
-   empty. Use only allowed ADR Status values, and backlog `Source`
+   empty. Use only allowed ADR Status values, and follow-up `Source`
    (`human`/`review`/`agent`) and item `Status` (`accepted`/`out-of-the-scope`)
    values.
 
@@ -48,5 +49,5 @@ file(s) a change affects and always leaving the trio valid against
    reported problems.
 
 5. **Report.** Summarize what changed (old → new Status, superseding link,
-   revised sections, or backlog edits). If the ADR was just moved to `Accepted`,
-   mention that `adrs:implement` can now build it.
+   revised sections, or follow-up edits). If the ADR was just moved to
+   `Accepted`, mention that `adrs:implement` can now build the plan.

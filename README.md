@@ -19,34 +19,37 @@ when several ADRs share an iteration:
 | File | Role |
 | ---- | ---- |
 | `<stem>-summary.md` | The **decision** — context, options, outcome, and Status. |
-| `<stem>-plan.md` | The **implementation plan** — approach and steps. |
-| `<stem>-backlog.md` | The **action items** — an overview table plus per-group detail. |
+| `<stem>-plan.md` | The **plan** — the essential implementation (approach and steps). |
+| `<stem>-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
 
 The `shared/` folder is the single source of truth: `adr-summary-template.md`,
-`adr-plan-template.md`, `adr-backlog-template.md` (what `init` scaffolds from)
+`adr-plan-template.md`, `adr-followups-template.md` (what `init` scaffolds from)
 and `adr-schema.md` (what `validate` checks against).
 
 | Skill | What it does |
 | ----- | ------------ |
 | `/adrs:init` | Scaffold a new ADR trio, Status `Proposed`. **Spec only — writes no implementation code.** |
 | `/adrs:validate <path>` | Deterministically check the whole trio against the schema via `scripts/validate-adr.py`. Pass any trio file or the stem. CI-gate friendly. |
-| `/adrs:implement <path>` | The agentic step: read an accepted trio (summary + plan + backlog) as the contract and make the repo changes it specifies. |
-| `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage backlog items, keeping the trio schema-valid. |
+| `/adrs:implement <path>` | The agentic step: build the plan (the essential implementation) for an accepted ADR. Follow-ups are tracked, not built. |
+| `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage follow-up items, keeping the trio schema-valid. |
 
 The **summary** carries the ADR Status (`Proposed`, `Accepted`, `Rejected`,
 `Deprecated`, `Superseded`) plus front matter including `tags`,
 `continuation_of`, and `group`. The validator resolves `continuation_of` and
 `Superseded by [...]` links to make sure the referenced ADRs exist.
 
-The **backlog** opens with an `Overview` table — `Group | ID | Title | Source |
-Status` — then a section per group (`Bugs`, `Gaps`, `Improvements`,
-`Nice-to-have`) where each item is a `### <ID> — <Title>` entry with
-`**Description:**`, `**Source:**`, `**Status:**`, and an optional
-`**Status reason:**`. IDs are per-group (`B1`, `G2`, `I1`, `N1`); `Source` is
-`human` / `review` / `agent`; item `Status` is `accepted` / `out-of-the-scope`.
-Every Overview row has a matching detail entry, and their Source/Status agree.
+The **follow-ups** file tracks action items *outside* the essential
+implementation (which the plan covers) — bugs, gaps, improvements, and
+nice-to-haves that `implement` records but does not build. It opens with an
+`Overview` table — `Group | ID | Title | Source | Status` — then a section per
+group (`Bugs`, `Gaps`, `Improvements`, `Nice-to-have`) where each item is a
+`### <ID> — <Title>` entry with `**Description:**`, `**Source:**`, `**Status:**`,
+and an optional `**Status reason:**`. IDs are per-group (`B1`, `G2`, `I1`, `N1`);
+`Source` is `human` / `review` / `agent`; item `Status` is `accepted` /
+`out-of-the-scope`. Every Overview row has a matching detail entry, and their
+Source/Status agree.
 
-Files are length-capped to stay reviewable: **summary ≤ 350**, **backlog ≤ 350**,
+Files are length-capped to stay reviewable: **summary ≤ 350**, **follow-ups ≤ 350**,
 **plan ≤ 600** lines (the plan captures the approach and where changes land, not
 a full code preview). Run the validator directly to gate CI:
 
@@ -91,8 +94,8 @@ claude-plugins/
 │   │   ├── shared/
 │   │   │   ├── adr-summary-template.md   # decision skeleton init scaffolds from
 │   │   │   ├── adr-plan-template.md      # implementation-plan skeleton
-│   │   │   ├── adr-backlog-template.md   # grouped action-items skeleton
-│   │   │   └── adr-schema.md             # trio contract: sections, Status, backlog vocab
+│   │   │   ├── adr-followups-template.md # follow-up action-items skeleton
+│   │   │   └── adr-schema.md             # trio contract: sections, Status, follow-up vocab
 │   │   └── skills/
 │   │       ├── init/SKILL.md
 │   │       ├── validate/

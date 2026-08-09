@@ -2,7 +2,7 @@
 """Validate an ADR trio against the ADR schema.
 
 One ADR is three files sharing the stem ``YYYYMMDD-title``:
-``-summary.md``, ``-plan.md``, and ``-backlog.md``. Given a path to any one of
+``-summary.md``, ``-plan.md``, and ``-followups.md``. Given a path to any one of
 them (or the bare stem), this validates the whole trio. The rules mirror
 ``shared/adr-schema.md`` (the single source of truth).
 
@@ -22,7 +22,7 @@ import os
 import re
 import sys
 
-ROLES = ("summary", "plan", "backlog")
+ROLES = ("summary", "plan", "followups")
 
 REQUIRED_SECTIONS = {
     "summary": [
@@ -34,7 +34,7 @@ REQUIRED_SECTIONS = {
         "Consequences",
     ],
     "plan": ["Approach", "Steps"],
-    "backlog": ["Overview", "Bugs", "Gaps", "Improvements", "Nice-to-have"],
+    "followups": ["Overview", "Bugs", "Gaps", "Improvements", "Nice-to-have"],
 }
 
 ALLOWED_STATUS = ["Proposed", "Accepted", "Rejected", "Deprecated", "Superseded"]
@@ -43,9 +43,9 @@ ITEM_STATUS = {"accepted", "out-of-the-scope"}
 
 # Maximum physical line count per file. Keeps each doc focused; the plan gets
 # more room because it captures the technical approach, not a full code preview.
-MAX_LINES = {"summary": 350, "plan": 600, "backlog": 350}
+MAX_LINES = {"summary": 350, "plan": 600, "followups": 350}
 
-# Backlog groups and their item-ID prefixes.
+# Follow-up groups and their item-ID prefixes.
 GROUPS = {"Bugs": "B", "Gaps": "G", "Improvements": "I", "Nice-to-have": "N"}
 
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*$")
@@ -228,7 +228,7 @@ def overview_rows(content):
         yield cells
 
 
-def validate_backlog(lines, headings, errors, path):
+def validate_followups(lines, headings, errors, path):
     """Validate the Overview table, per-group detail entries, and their consistency."""
     group_by_norm = {norm_heading(name): (name, letter)
                      for name, letter in GROUPS.items()}
@@ -333,37 +333,37 @@ def validate_entry_fields(iid, fields, ov, errors, path):
     """Check a detail entry's Description / Source / Status and Overview agreement."""
     desc = fields.get("description")
     if not desc or not desc[1]:
-        errors.append(f"ERROR: {path}: backlog item '{iid}' is missing a non-empty **Description**")
+        errors.append(f"ERROR: {path}: follow-up item '{iid}' is missing a non-empty **Description**")
 
     src = fields.get("source")
     if not src:
-        errors.append(f"ERROR: {path}: backlog item '{iid}' is missing **Source**")
+        errors.append(f"ERROR: {path}: follow-up item '{iid}' is missing **Source**")
     else:
         sval = src[0].split()[0].lower() if src[0] else ""
         if sval not in ALLOWED_SOURCE:
             errors.append(
-                f"ERROR: {path}: backlog item '{iid}' Source '{src[0]}' invalid; "
+                f"ERROR: {path}: follow-up item '{iid}' Source '{src[0]}' invalid; "
                 f"must be one of: {', '.join(sorted(ALLOWED_SOURCE))}"
             )
         elif ov and ov[0] in ALLOWED_SOURCE and ov[0] != sval:
             errors.append(
-                f"ERROR: {path}: backlog item '{iid}' Source '{sval}' disagrees "
+                f"ERROR: {path}: follow-up item '{iid}' Source '{sval}' disagrees "
                 f"with the Overview ('{ov[0]}')"
             )
 
     st = fields.get("status")
     if not st:
-        errors.append(f"ERROR: {path}: backlog item '{iid}' is missing **Status**")
+        errors.append(f"ERROR: {path}: follow-up item '{iid}' is missing **Status**")
     else:
         stval = st[0].split()[0].lower() if st[0] else ""
         if stval not in ITEM_STATUS:
             errors.append(
-                f"ERROR: {path}: backlog item '{iid}' Status '{st[0]}' invalid; "
+                f"ERROR: {path}: follow-up item '{iid}' Status '{st[0]}' invalid; "
                 f"must be one of: {', '.join(sorted(ITEM_STATUS))}"
             )
         elif ov and ov[1] in ITEM_STATUS and ov[1] != stval:
             errors.append(
-                f"ERROR: {path}: backlog item '{iid}' Status '{stval}' disagrees "
+                f"ERROR: {path}: follow-up item '{iid}' Status '{stval}' disagrees "
                 f"with the Overview ('{ov[1]}')"
             )
 
@@ -410,8 +410,8 @@ def validate_file(path, role, errors):
             continue
         content = h2[key]
         non_blank = [ln.strip() for ln in content if ln.strip()]
-        # A backlog group counts a header-only table as legitimately empty.
-        if role != "backlog" and not non_blank:
+        # A follow-up group counts a header-only table as legitimately empty.
+        if role != "followups" and not non_blank:
             errors.append(f"ERROR: {path}: section '## {sec}' is empty")
             continue
         if role == "summary" and sec == "Status":
@@ -437,8 +437,8 @@ def validate_file(path, role, errors):
                         )
     if role == "summary":
         validate_summary_metadata(text, path, errors)
-    if role == "backlog":
-        validate_backlog(lines, headings, errors, path)
+    if role == "followups":
+        validate_followups(lines, headings, errors, path)
 
 
 def validate(input_path):
@@ -469,13 +469,13 @@ def validate(input_path):
         for err in errors:
             print(f"  - {err}")
         return 1
-    print(f"VALID: {os.path.join(directory, stem)} (summary + plan + backlog)")
+    print(f"VALID: {os.path.join(directory, stem)} (summary + plan + followups)")
     return 0
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Validate an ADR trio (summary + plan + backlog)."
+        description="Validate an ADR trio (summary + plan + followups)."
     )
     parser.add_argument(
         "adr",

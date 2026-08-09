@@ -1,14 +1,15 @@
 ---
 name: implement
-description: Implement an accepted Architecture Decision Record (ADR) by editing the repository to satisfy it. Use when the user asks to implement, apply, execute, or carry out an ADR / architecture decision. This is the agentic step that changes code — it reads the ADR trio (summary, plan, backlog) as the contract.
+description: Implement an accepted Architecture Decision Record (ADR) by editing the repository to satisfy it. Use when the user asks to implement, apply, execute, or carry out an ADR / architecture decision. This is the agentic step that changes code — it builds the plan (the essential implementation).
 ---
 
 # 🔨 adrs:implement — build the repo changes an ADR specifies
 
-Take an accepted ADR and make the repository changes it calls for, treating the
-trio as the contract: the **summary** is the decision, the **plan** is the
-approach, and the **backlog** is the list of work items. This is the one ADR
-skill that edits application code.
+Take an accepted ADR and make the repository changes it calls for. The
+**plan** is the deliverable — the essential implementation — guided by the
+**summary** (the decision). The **follow-ups** file is *not* built here; it is a
+tracker for work outside the essential implementation. This is the one ADR skill
+that edits application code.
 
 ## 📋 Steps
 
@@ -27,19 +28,21 @@ skill that edits application code.
    - `Rejected`, `Deprecated`, or `Superseded`: stop and tell the user this ADR
      should not be implemented (point to the superseding ADR if any).
 
-4. **Read the trio as the contract.**
+4. **Read the ADR as the contract.**
    - From the **summary**: the Decision Outcome and the Requirements
      (constraints to honor).
-   - From the **plan**: the Approach and Steps to follow.
-   - From the **backlog**: the concrete work items. Use the `Overview` table to
-     see every item, then read each item's detail entry. Implement items whose
-     `Status` is `accepted`; **skip** items marked `out-of-the-scope`.
+   - From the **plan**: the Approach and Steps to follow — this is what you
+     build.
+   - The **follow-ups** file is context only. **Do not implement its items** —
+     they are tracked for later, outside the essential implementation. Read them
+     so you don't re-file the same follow-ups, and so you know what is
+     deliberately deferred (`out-of-the-scope`).
 
-5. **Implement.** Make the changes across the repository — code, config, docs,
-   and tests — following the plan's Steps and the existing codebase
-   conventions. Keep changes scoped to the ADR. If you find the ADR is ambiguous
-   or conflicts with reality, pause and raise it rather than guessing (an
-   `adrs:update` may be needed).
+5. **Implement the plan.** Make the changes across the repository — code,
+   config, docs, and tests — following the plan's Steps and the existing
+   codebase conventions. Keep changes scoped to the plan. If you find the ADR is
+   ambiguous or conflicts with reality, pause and raise it rather than guessing
+   (an `adrs:update` may be needed).
 
    > For heavy, multi-file implementations you may delegate the edits to a
    > subagent — promote this step to a dedicated `agents/implementer.md`
@@ -50,11 +53,12 @@ skill that edits application code.
    the change satisfies the summary's Requirements and the plan's
    verification step.
 
-7. **Update the backlog.** If implementation surfaces new `bugs`, `gaps`,
-   `improvements`, or `nice-to-have` items, add them (Overview row + matching
-   `### <ID> …` detail) with `Source: agent` and an appropriate `Status` — via
-   `adrs:update`.
+7. **Record follow-ups.** If implementation surfaces new work *outside* the
+   essential implementation — `bugs`, `gaps`, `improvements`, or `nice-to-have`
+   — add it to the follow-ups file (Overview row + matching `### <ID> …` detail)
+   with `Source: agent` and an appropriate `Status`, via `adrs:update`. Do not
+   build these now.
 
-8. **Report.** Summarize the changes made, how they satisfy the ADR, and any
-   backlog items left as `out-of-the-scope` or newly added. If the summary's
-   Status should change, suggest running `adrs:update`.
+8. **Report.** Summarize the changes made and how they satisfy the ADR, plus any
+   follow-ups you recorded. If the summary's Status should change, suggest
+   running `adrs:update`.
