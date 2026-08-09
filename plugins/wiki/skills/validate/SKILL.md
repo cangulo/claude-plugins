@@ -3,14 +3,14 @@ name: validate
 description: Validate a repository wiki against the wiki conventions. Use when the user asks to validate, check, lint, or verify the wiki, or wants to confirm the wiki/ directory has Home and _Sidebar, valid page headings, no broken internal links, and GitHub-wiki-standard structure.
 ---
 
-# wiki:validate — check the wiki against the conventions
+# 🔍 wiki:validate — check the wiki against the conventions
 
 Validate the whole `wiki/` directory against
 `${CLAUDE_PLUGIN_ROOT}/shared/wiki-conventions.md`. A wiki is a linked set of
 pages, so validation runs over the entire directory, not a single file.
 Validation is deterministic via the bundled script so it can also gate CI.
 
-## Steps
+## 📋 Steps
 
 1. **Resolve the wiki directory.** Default to `wiki/`. If the user names another
    path, use it.

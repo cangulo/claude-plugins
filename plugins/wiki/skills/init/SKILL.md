@@ -3,13 +3,13 @@ name: init
 description: Initialize a repository wiki. Use when the user wants to create, scaffold, set up, or start a wiki for the repo. Creates a GitHub-wiki-standard wiki/ directory (Home + _Sidebar) and can add the workflow that publishes it to the repo's GitHub wiki.
 ---
 
-# wiki:init — scaffold a GitHub-wiki-standard wiki
+# 🚀 wiki:init — scaffold a GitHub-wiki-standard wiki
 
 Create a `wiki/` directory that follows
 `${CLAUDE_PLUGIN_ROOT}/shared/wiki-conventions.md` so it renders natively as the
 repository's GitHub wiki and can be published by a CI workflow.
 
-## Steps
+## 📋 Steps
 
 1. **Read the conventions.** Load `${CLAUDE_PLUGIN_ROOT}/shared/wiki-conventions.md`
    — it is the single source of truth for layout, page naming, special pages,

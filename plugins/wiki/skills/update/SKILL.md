@@ -3,12 +3,12 @@ name: update
 description: Add or edit a wiki page. Use when the user wants to add, write, update, edit, rename, or remove a page in the repository wiki, or refresh wiki content. Keeps the sidebar navigation and internal links in sync with the wiki conventions.
 ---
 
-# wiki:update — add or edit a wiki page
+# ✏️ wiki:update — add or edit a wiki page
 
 Create or modify pages in the `wiki/` directory while keeping the wiki valid
 against `${CLAUDE_PLUGIN_ROOT}/shared/wiki-conventions.md`.
 
-## Steps
+## 📋 Steps
 
 1. **Read the conventions.** Load `${CLAUDE_PLUGIN_ROOT}/shared/wiki-conventions.md`
    for naming, links, and sidebar rules. If `wiki/` does not exist yet, run

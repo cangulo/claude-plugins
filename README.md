@@ -1,4 +1,4 @@
-# claude-plugins
+# 🧩 claude-plugins
 
 Personal [Claude Code plugin](https://docs.claude.com/en/docs/claude-code/plugins) marketplace by [@cangulo](https://github.com/cangulo).
 
@@ -9,7 +9,7 @@ It hosts two plugins, each exposing its operations as auto-invocable **skills**:
 | `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki |
 | `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow |
 
-## `wiki` — repository wiki, GitHub-wiki standard
+## 📖 `wiki` — repository wiki, GitHub-wiki standard
 
 A three-skill workflow for authoring a repository wiki in a top-level `wiki/`
 directory that renders natively as the repo's **GitHub wiki**. The `shared/`
@@ -32,7 +32,7 @@ directly to gate CI:
 python plugins/wiki/skills/validate/scripts/validate-wiki.py wiki
 ```
 
-## Install
+## 📦 Install
 
 ```text
 /plugin marketplace add cangulo/claude-plugins
@@ -46,7 +46,7 @@ Works in both Claude Desktop and the Claude Code CLI.
 > `claude-*` names), so installs use the `@cangulo-plugins` suffix. The repo is
 > still `cangulo/claude-plugins`.
 
-## Usage
+## ▶️ Usage
 
 Once a plugin is installed, invoke a skill explicitly with `/<plugin>:<skill>`,
 or just describe your task and let Claude auto-invoke the matching skill:
@@ -57,7 +57,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 /adrs:implement docs/adr/0007-x.md
 ```
 
-## Layout
+## 🗂️ Layout
 
 ```text
 claude-plugins/
@@ -81,7 +81,7 @@ claude-plugins/
 └── LICENSE
 ```
 
-## Development
+## 🛠️ Development
 
 While iterating on a plugin, run Claude Code with the local plugin dir so
 `SKILL.md` edits take effect live, without reinstalling from the marketplace:
@@ -96,6 +96,6 @@ Validate a plugin manifest before committing:
 claude plugin validate ./plugins/adrs
 ```
 
-## License
+## 📄 License
 
 [MIT](./LICENSE)
