@@ -4,10 +4,55 @@ Personal [Claude Code plugin](https://docs.claude.com/en/docs/claude-code/plugin
 
 It hosts two plugins, each exposing its operations as auto-invocable **skills**:
 
-| Plugin | Skills | Purpose |
-| ------ | ------ | ------- |
-| `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki |
-| `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow |
+| Plugin | Skills | Purpose | Status |
+| ------ | ------ | ------- | ------ |
+| `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow | ✅ available |
+| `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki | ✅ available |
+
+## 📐 `adrs` — spec-driven ADR workflow
+
+A four-skill workflow that treats an Architecture Decision Record as the
+contract for a change. **One ADR is a trio of files** sharing a stem under
+`docs/adr/` — `YYYYMMDD-title`, or the grouped `YYYYMMDD-<group>-<NN>-<title>`
+when several ADRs share an iteration:
+
+| File | Role |
+| ---- | ---- |
+| `<stem>-summary.md` | The **decision** — context, options, outcome, and Status. |
+| `<stem>-plan.md` | The **implementation plan** — approach and steps. |
+| `<stem>-backlog.md` | The **action items** — an overview table plus per-group detail. |
+
+The `shared/` folder is the single source of truth: `adr-summary-template.md`,
+`adr-plan-template.md`, `adr-backlog-template.md` (what `init` scaffolds from)
+and `adr-schema.md` (what `validate` checks against).
+
+| Skill | What it does |
+| ----- | ------------ |
+| `/adrs:init` | Scaffold a new ADR trio, Status `Proposed`. **Spec only — writes no implementation code.** |
+| `/adrs:validate <path>` | Deterministically check the whole trio against the schema via `scripts/validate-adr.py`. Pass any trio file or the stem. CI-gate friendly. |
+| `/adrs:implement <path>` | The agentic step: read an accepted trio (summary + plan + backlog) as the contract and make the repo changes it specifies. |
+| `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage backlog items, keeping the trio schema-valid. |
+
+The **summary** carries the ADR Status (`Proposed`, `Accepted`, `Rejected`,
+`Deprecated`, `Superseded`) plus front matter including `tags`,
+`continuation_of`, and `group`. The validator resolves `continuation_of` and
+`Superseded by [...]` links to make sure the referenced ADRs exist.
+
+The **backlog** opens with an `Overview` table — `Group | ID | Title | Source |
+Status` — then a section per group (`Bugs`, `Gaps`, `Improvements`,
+`Nice-to-have`) where each item is a `### <ID> — <Title>` entry with
+`**Description:**`, `**Source:**`, `**Status:**`, and an optional
+`**Status reason:**`. IDs are per-group (`B1`, `G2`, `I1`, `N1`); `Source` is
+`human` / `review` / `agent`; item `Status` is `accepted` / `out-of-the-scope`.
+Every Overview row has a matching detail entry, and their Source/Status agree.
+
+Files are length-capped to stay reviewable: **summary ≤ 350**, **backlog ≤ 350**,
+**plan ≤ 600** lines (the plan captures the approach and where changes land, not
+a full code preview). Run the validator directly to gate CI:
+
+```text
+python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-summary.md
+```
 
 ## 📖 `wiki` — repository wiki, GitHub-wiki standard
 
@@ -53,8 +98,8 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 /wiki:init
-/adrs:validate docs/adr/0007-x.md
-/adrs:implement docs/adr/0007-x.md
+/adrs:validate docs/adr/20260808-use-postgres-summary.md
+/adrs:implement docs/adr/20260808-use-postgres
 ```
 
 ## 🗂️ Layout
@@ -64,19 +109,31 @@ claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json              # lists both plugins
 ├── plugins/
-│   ├── wiki/
+│   ├── adrs/
 │   │   ├── .claude-plugin/plugin.json
 │   │   ├── shared/
-│   │   │   ├── wiki-conventions.md    # rules all 3 skills follow
-│   │   │   └── publish-wiki.yml       # reference workflow: wiki/ -> .wiki.git
+│   │   │   ├── adr-summary-template.md   # decision skeleton init scaffolds from
+│   │   │   ├── adr-plan-template.md      # implementation-plan skeleton
+│   │   │   ├── adr-backlog-template.md   # grouped action-items skeleton
+│   │   │   └── adr-schema.md             # trio contract: sections, Status, backlog vocab
 │   │   └── skills/
 │   │       ├── init/SKILL.md
-│   │       ├── update/SKILL.md
-│   │       └── validate/
-│   │           ├── SKILL.md
-│   │           └── scripts/validate-wiki.py
-│   └── adrs/                          # delivered in its own PR
-│       └── .claude-plugin/plugin.json
+│   │       ├── validate/
+│   │       │   ├── SKILL.md
+│   │       │   └── scripts/validate-adr.py
+│   │       ├── implement/SKILL.md
+│   │       └── update/SKILL.md
+│   └── wiki/
+│       ├── .claude-plugin/plugin.json
+│       ├── shared/
+│       │   ├── wiki-conventions.md    # rules all 3 skills follow
+│       │   └── publish-wiki.yml       # reference workflow: wiki/ -> .wiki.git
+│       └── skills/
+│           ├── init/SKILL.md
+│           ├── update/SKILL.md
+│           └── validate/
+│               ├── SKILL.md
+│               └── scripts/validate-wiki.py
 ├── README.md
 └── LICENSE
 ```
