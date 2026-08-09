@@ -1,0 +1,63 @@
+# Reference workflow: publish the wiki/ folder to the repository's GitHub wiki.
+#
+# `wiki:init` can scaffold this into `.github/workflows/publish-wiki.yml`.
+# It mirrors the flat `wiki/` directory into `<owner>/<repo>.wiki.git` on every
+# push to the default branch that touches wiki/. Uses only git + the built-in
+# GITHUB_TOKEN — no third-party actions.
+#
+# One-time prerequisite: the wiki must be initialized before it can be pushed to.
+# Create any first page once via the repo's Wiki tab in the GitHub UI, then this
+# workflow keeps it in sync.
+
+name: Publish Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "wiki/**"
+      - ".github/workflows/publish-wiki.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-wiki
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Sync wiki/ to the GitHub wiki repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          repo="${{ github.repository }}"
+          work="$(mktemp -d)"
+
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git clone "https://x-access-token:${GH_TOKEN}@github.com/${repo}.wiki.git" "$work"; then
+            echo "::error::Could not clone the wiki. Initialize it once by creating a page in the Wiki tab, then re-run."
+            exit 1
+          fi
+
+          # Mirror wiki/ into the wiki repo: copy new/changed pages, drop removed
+          # ones, and preserve the wiki repo's own .git directory.
+          rsync -a --delete --exclude='.git' wiki/ "$work/"
+
+          cd "$work"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No wiki changes to publish."
+          else
+            git commit -m "Publish wiki from ${{ github.repository }}@${{ github.sha }}"
+            git push
+          fi
