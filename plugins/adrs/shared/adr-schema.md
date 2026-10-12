@@ -50,9 +50,12 @@ The summary file starts with a YAML front-matter block. Alongside
 * `group` — optional iteration slug shared by related ADRs; when set it matches
   the `group` segment of the grouped filename.
 
-The validator checks metadata **when it can**: `tags` must be a YAML array, and
-every `continuation_of` reference (and any `Superseded by [...]` link in the
-Status) must resolve to a summary file that exists under `docs/adr/`. Other
+`status` is required: one of the allowed Status values below (case-insensitive),
+and it MUST match the value the `## Status` section starts with (e.g.
+`status: "Superseded"` with `Superseded by [...]`). The validator also checks
+metadata **when it can**: `tags` must be a YAML array, and every
+`continuation_of` reference (and any `Superseded by [...]` link in the Status)
+must resolve to a summary file that exists under `docs/adr/`. Other
 front-matter fields are free-form.
 
 ## 🚦 Status (in the summary)
@@ -155,7 +158,8 @@ ERROR when any of the following fail:
    real `YYYYMMDD` date (covers both the simple and grouped forms).
 3. Each file has a level-1 `# ...` title as its first heading.
 4. Every required `##` section for that file is present and non-empty.
-5. The summary's `## Status` first content line starts with an allowed value.
+5. The summary's `## Status` first content line starts with an allowed value, and
+   the front-matter `status` is present, allowed, and equal to that value.
 6. In the follow-ups file: every Overview row has a valid `Group`, an `ID` whose prefix
    matches that group, an allowed `Source`, and an allowed `Status`; every
    Overview ID has a matching `### <ID> …` detail entry in the right group (and

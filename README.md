@@ -35,8 +35,9 @@ and `adr-schema.md` (what `validate` checks against).
 | `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage follow-up items, keeping the trio schema-valid. |
 
 The **summary** carries the ADR Status (`Proposed`, `Accepted`, `Rejected`,
-`Deprecated`, `Superseded`) plus front matter including `tags`,
-`continuation_of`, and `group`. The validator resolves `continuation_of` and
+`Deprecated`, `Superseded`) twice, in the `## Status` section and the
+front-matter `status`, and the validator requires both to match. Its front
+matter also includes `tags`, `continuation_of`, and `group`. The validator resolves `continuation_of` and
 `Superseded by [...]` links to make sure the referenced ADRs exist.
 
 The **follow-ups** file tracks action items *outside* the essential

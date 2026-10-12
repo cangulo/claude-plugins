@@ -172,10 +172,28 @@ def link_to_stem(entry):
     return e
 
 
-def validate_summary_metadata(text, path, errors):
-    """Validate summary front matter 'when possible' — chiefly ADR link targets."""
+def validate_summary_metadata(text, path, errors, section_status=None):
+    """Validate summary front matter: `status`, `tags`, and ADR link targets.
+
+    ``section_status`` is the allowed value the `## Status` section starts with
+    (None when that section is missing or invalid, which is reported elsewhere).
+    """
     directory = os.path.dirname(path) or "."
     fm = parse_front_matter(text)
+
+    status = fm.get("status")
+    if not isinstance(status, str) or not status.strip():
+        errors.append(f"ERROR: {path}: front-matter 'status' is missing or empty")
+    elif status.strip().lower() not in {v.lower() for v in ALLOWED_STATUS}:
+        errors.append(
+            f"ERROR: {path}: invalid front-matter status '{status}'; must be one "
+            f"of: {', '.join(ALLOWED_STATUS)}"
+        )
+    elif section_status and status.strip().lower() != section_status.lower():
+        errors.append(
+            f"ERROR: {path}: front-matter status '{status}' disagrees with the "
+            f"'## Status' section ('{section_status}')"
+        )
 
     if "tags" in fm and not isinstance(fm["tags"], list):
         errors.append(f"ERROR: {path}: front-matter 'tags' must be a YAML array")
@@ -406,6 +424,7 @@ def validate_file(path, role, errors):
 
     # Map level-2 section title -> content (normalized keys for matching).
     h2 = {}
+    section_status = None
     for i, (level, title, _) in enumerate(headings):
         if level == 2:
             key = norm_heading(title)
@@ -425,10 +444,15 @@ def validate_file(path, role, errors):
             continue
         if role == "summary" and sec == "Status":
             first = non_blank[0] if non_blank else ""
-            if not any(
-                re.match(rf"^{re.escape(v)}\b", first, re.IGNORECASE)
-                for v in ALLOWED_STATUS
-            ):
+            section_status = next(
+                (
+                    v
+                    for v in ALLOWED_STATUS
+                    if re.match(rf"^{re.escape(v)}\b", first, re.IGNORECASE)
+                ),
+                None,
+            )
+            if not section_status:
                 errors.append(
                     f"ERROR: {path}: invalid Status '{first}'; must start with one "
                     f"of: {', '.join(ALLOWED_STATUS)}"
@@ -445,7 +469,7 @@ def validate_file(path, role, errors):
                             f"'{mlink.group(1)}' does not exist"
                         )
     if role == "summary":
-        validate_summary_metadata(text, path, errors)
+        validate_summary_metadata(text, path, errors, section_status)
     if role == "followups":
         validate_followups(lines, headings, errors, path)
 
