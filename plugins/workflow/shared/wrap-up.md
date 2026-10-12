@@ -99,7 +99,8 @@ Computed **after** cleanup.
   * an open or draft PR;
   * failing or running CI, requested changes, unresolved review comments;
   * blocked items (e.g. the issue's "blocked by" list still open);
-  * unchecked acceptance criteria not covered by a merged PR;
+  * an acceptance criterion the merged PRs clearly don't satisfy, named
+    explicitly. Unchecked boxes alone are **not** pending: nobody ticks them.
   * cleanup items flagged in step 5.
 
 An empty list prints `none`. "Nothing pending" means both lists are empty.
