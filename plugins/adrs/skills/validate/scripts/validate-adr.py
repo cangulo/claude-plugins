@@ -12,8 +12,8 @@ usage/IO errors. Every problem is printed on its own line so the output can gate
 CI.
 
 Usage:
-    python validate-adr.py docs/adr/20260808-use-postgres-0-summary.md
-    python validate-adr.py docs/adr/20260808-use-postgres        # bare stem
+    python validate-adr.py wiki/20260808-use-postgres-0-summary.md
+    python validate-adr.py wiki/20260808-use-postgres        # bare stem
 """
 from __future__ import annotations
 

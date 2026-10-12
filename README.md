@@ -13,8 +13,8 @@ It hosts three plugins, each exposing its operations as auto-invocable **skills*
 ## 📐 `adrs` — spec-driven ADR workflow
 
 A four-skill workflow that treats an Architecture Decision Record as the
-contract for a change. **One ADR is a trio of files** sharing a stem under
-`docs/adr/` — `YYYYMMDD-title`, or the grouped `YYYYMMDD-<group>-<NN>-<title>`
+contract for a change. **One ADR is a trio of files** sharing a stem in the
+repo's ADR folder — `YYYYMMDD-title`, or the grouped `YYYYMMDD-<group>-<NN>-<title>`
 when several ADRs share an iteration:
 
 | File | Role |
@@ -24,8 +24,21 @@ when several ADRs share an iteration:
 | `<stem>-2-followups.md` | The **follow-ups** — action items *outside* the essential implementation. |
 
 The `shared/` folder is the single source of truth: `adr-summary-template.md`,
-`adr-plan-template.md`, `adr-followups-template.md` (what `init` scaffolds from)
-and `adr-schema.md` (what `validate` checks against).
+`adr-plan-template.md`, `adr-followups-template.md` (what `init` scaffolds from),
+`adr-schema.md` (what `validate` checks against) and `adr-folder.md` (where the
+ADRs live).
+
+**ADR folder.** Every skill resolves it on each run and prints it with its
+source: an explicit path argument → a rule in the repo's CLAUDE.md
+(`./CLAUDE.md` or `.claude/CLAUDE.md`) → a rule in `~/.claude/CLAUDE.md` → ask,
+proposing `docs/adr/` or `wiki/` (handy with the `wiki` plugin, which syncs
+`wiki/` with the GitHub wiki), then offer to save the answer as a one-line rule
+in the repo's CLAUDE.md. The folder is flat, e.g. `wiki/<stem>-0-summary.md`.
+A rule looks like:
+
+```text
+- ADRs live in wiki/*.md (adrs plugin folder).
+```
 
 | Skill | What it does |
 | ----- | ------------ |
@@ -56,7 +69,7 @@ Files are length-capped to stay reviewable: **summary ≤ 350**, **follow-ups �
 a full code preview). Run the validator directly to gate CI:
 
 ```text
-python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-0-summary.md
+python plugins/adrs/skills/validate/scripts/validate-adr.py wiki/20260808-use-postgres-0-summary.md
 ```
 
 ## 🧾 `workflow` — Governor/Implementator chat wrap-up
@@ -78,8 +91,8 @@ questions and pending actions, finding the Governor, and the output rules.
 Recap detects new progress through a hidden `<!-- workflow:recap … -->` marker
 line in its last issue comment; close-out's closing comment carries it too. The
 design is in
-[docs/adr/20261012-workflow-01-shared-wrap-up](./docs/adr/20261012-workflow-01-shared-wrap-up-0-summary.md)
-and [docs/adr/20261012-workflow-02-close-out](./docs/adr/20261012-workflow-02-close-out-0-summary.md).
+[wiki/20261012-workflow-01-shared-wrap-up](./wiki/20261012-workflow-01-shared-wrap-up-0-summary.md)
+and [wiki/20261012-workflow-02-close-out](./wiki/20261012-workflow-02-close-out-0-summary.md).
 
 ## 📦 Install
 
@@ -103,8 +116,8 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 /wiki:init
-/adrs:validate docs/adr/20260808-use-postgres-0-summary.md
-/adrs:implement docs/adr/20260808-use-postgres
+/adrs:validate wiki/20260808-use-postgres-0-summary.md
+/adrs:implement wiki/20260808-use-postgres
 /workflow:recap 8
 /workflow:close-out 9
 ```
@@ -125,7 +138,8 @@ claude-plugins/
 │   │   │   ├── adr-summary-template.md   # decision skeleton init scaffolds from
 │   │   │   ├── adr-plan-template.md      # implementation-plan skeleton
 │   │   │   ├── adr-followups-template.md # follow-up action-items skeleton
-│   │   │   └── adr-schema.md             # trio contract: sections, Status, follow-up vocab
+│   │   │   ├── adr-schema.md             # trio contract: sections, Status, follow-up vocab
+│   │   │   └── adr-folder.md             # how skills resolve the ADR folder
 │   │   └── skills/
 │   │       ├── init/SKILL.md
 │   │       ├── validate/
@@ -141,7 +155,8 @@ claude-plugins/
 │       └── skills/
 │           ├── recap/SKILL.md
 │           └── close-out/SKILL.md
-├── docs/adr/                          # ADRs for this repo
+├── wiki/                              # ADRs for this repo (flat)
+├── CLAUDE.md                          # repo rules (ADR folder)
 ├── README.md
 └── LICENSE
 ```
@@ -169,7 +184,7 @@ these is invalid:
 
 - the marketplace: `claude plugin validate --strict .`
 - each plugin under `plugins/*/`: `claude plugin validate --strict ./plugins/<name>`
-- each ADR trio under `docs/adr/`: `validate-adr.py <stem>-0-summary.md`
+- each ADR trio under `wiki/`: `validate-adr.py <stem>-0-summary.md`
 
 `claude plugin validate` runs offline, so the workflow needs no secrets.
 

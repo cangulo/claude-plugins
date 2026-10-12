@@ -40,7 +40,7 @@ jobs:
         run: |
           failed=0
           shopt -s nullglob
-          for summary in docs/adr/*-0-summary.md; do
+          for summary in wiki/*-0-summary.md; do
             python3 plugins/adrs/skills/validate/scripts/validate-adr.py "$summary" || failed=1
           done
           exit $failed
