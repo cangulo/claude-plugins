@@ -1,6 +1,6 @@
 {
   "name": "cangulo-plugins",
-  "description": "Carlos' personal Claude Code plugins: wiki and ADR workflows",
+  "description": "Carlos' personal Claude Code plugins: wiki, ADR and chat workflows",
   "owner": {
     "name": "Carlos",
     "url": "https://github.com/cangulo"
@@ -15,6 +15,11 @@
       "name": "adrs",
       "source": "./plugins/adrs",
       "description": "Spec-driven ADR workflow: create, validate, implement, and update ADRs"
+    },
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "Governor/Implementator chat workflow on GitHub issues: recap a chat's work and notify the Governor"
     }
   ]
 }
