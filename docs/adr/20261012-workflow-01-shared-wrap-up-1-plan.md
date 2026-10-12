@@ -23,9 +23,10 @@ plugins/workflow/
    `<topic>: #<N> <title>`; ask if unclear. Read it with `gh issue view`.
 3. **Work done** — conversation + `git log origin/<default>..HEAD` + diff stat.
 4. **PRs** — PRs touched in the chat plus `gh pr list --state all` filtered by
-   head branch `<N>-*` or `#<N>` in the body; state, CI and review for open ones.
+   head branch `<N>-*` or `#<N>` as a whole word (regex `#<N>\b`) in the body; state, CI and review for open ones.
 5. **Cleanup** — merged PRs of this issue only: skip the current branch and
-   worktree; `git worktree remove` (no `--force`), `git branch -d`,
+   worktree; `git worktree remove` (no `--force`), `git branch -d` (or `-D`
+   only when the PR is merged and the local tip equals its `headRefOid`),
    `git worktree prune`; flag anything that fails.
 6. **Open questions / pending** — computed after cleanup.
 7. **Find the Governor** and **deliver an update** (issue comment always;

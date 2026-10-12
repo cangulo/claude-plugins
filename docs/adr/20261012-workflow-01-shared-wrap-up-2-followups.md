@@ -27,7 +27,7 @@ checks. A workflow could run `claude plugin validate` on each plugin and
 
 **Status:** accepted
 
-**Status reason:** accepted as a gap: PRs currently rely on manual validation.
+**Status reason:** accepted as a gap: PRs currently rely on manual validation. Tracked in [claude-plugins#11](https://github.com/cangulo/claude-plugins/issues/11), outside M1.
 
 ## 📈 Improvements
 
@@ -45,6 +45,6 @@ final worktree removal in `/workflow:close-out` (#9).
 
 **Status:** accepted
 
-**Status reason:** accepted as an improvement: without it, cleanup mostly ends in manual commands.
+**Status reason:** done: approved by Carlos ([decision](https://github.com/cangulo/claude-plugins/issues/8#issuecomment-6125483723)) and implemented in [claude-plugins#10](https://github.com/cangulo/claude-plugins/pull/10), shared/wrap-up.md cleanup step 3.
 
 ## 🌟 Nice-to-have

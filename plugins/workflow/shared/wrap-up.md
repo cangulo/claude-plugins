@@ -58,8 +58,9 @@ The issue's PRs are the union of:
 
 * PRs created, pushed to or reviewed in this chat;
 * `gh pr list --state all --limit 100 --json number,title,state,url,headRefName,headRefOid,isDraft,body`
-  filtered to head branch `<NUMBER>-*` or a body mentioning `#<NUMBER>`
-  (`Closes #<NUMBER>`, `Part of #<NUMBER>`).
+  filtered to head branch `<NUMBER>-*` or a body mentioning `#<NUMBER>` as a
+  whole word (`Closes #<NUMBER>`, `Part of #<NUMBER>`; regex `#<NUMBER>\b`, so
+  `#8` doesn't match `#80`).
 
 For each: link, title, state (`open`, `draft`, `merged`, `closed`). For open
 PRs also show CI (`gh pr checks <PR>`) and review state
@@ -76,12 +77,16 @@ repo-wide sweep. For each merged PR, with `<branch>` = its head branch:
    `refs/heads/<branch>`, run `git worktree remove <path>` (**never**
    `--force`).
 3. **Branch** — if `refs/heads/<branch>` exists locally, run
-   `git branch -d <branch>` (**never** `-D`).
+   `git branch -d <branch>`. If it refuses because the branch isn't merged
+   (squash merges), use `git branch -D <branch>` **only when** the PR's `gh`
+   state is `MERGED` **and** `git rev-parse refs/heads/<branch>` equals the
+   PR's `headRefOid` (nothing unpushed is lost). Otherwise don't delete.
 4. Run `git worktree prune` once at the end.
 
-If a command refuses (dirty worktree, branch not merged, e.g. after a squash
-merge), **don't force it**. Flag it with the reason and the command Carlos can
-run by hand. Remote branches are not touched. Nothing to do → `nothing to clean`.
+If a command refuses (dirty worktree, local commits not in the PR), **don't
+force it**. Flag it with the reason and the command Carlos can run by hand.
+`git worktree remove --force` is never used. Remote branches are not touched.
+Nothing to do → `nothing to clean`.
 
 ## 6. ❓ Open questions and ⏳ pending actions
 

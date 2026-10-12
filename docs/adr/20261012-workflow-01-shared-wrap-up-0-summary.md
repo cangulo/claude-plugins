@@ -35,7 +35,9 @@ the skills behave in local and cloud chats.
 * R2 — Never rewrite the issue body; summaries go in issue comments.
 * R3 — Recap never commits, pushes, closes the issue or archives the chat.
 * R4 — Cleanup only deletes this issue's merged local branches/worktrees, never
-  the chat's own worktree/branch, never with `--force`.
+  the chat's own worktree/branch. `git worktree remove` never uses `--force`.
+  `git branch -D` only when the PR is merged and the local tip equals its
+  `headRefOid` (squash merges; follow-up I1).
 * R5 — Notify the Governor only on new progress; always via an issue comment,
   plus `SendMessage` in local chats, or a "say sync" instruction in cloud chats.
 * R6 — Works in local (desktop app) and cloud (claude.ai/code) chats; GitHub
@@ -70,6 +72,9 @@ Chosen: **A + D + F + H**.
   It survives new chats and context compaction and works in cloud chats.
 * **F** — recap deletes branches and posts comments, so it only runs when
   Carlos types `/workflow:recap`.
+* **Cleanup after squash merges** (follow-up I1, approved by Carlos) —
+  `git branch -d` first; `-D` only when the PR is `MERGED` on GitHub and the
+  local tip equals the PR's `headRefOid`; otherwise flag.
 * **H** — local when the session tools (`list_sessions` / `SendMessage`) are
   available; otherwise cloud.
 
