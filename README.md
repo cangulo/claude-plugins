@@ -112,6 +112,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 claude-plugins/
+├── .github/workflows/validate.yml    # CI: validates marketplace, plugins and ADRs
 ├── .claude-plugin/
 │   └── marketplace.json              # lists the plugins
 ├── plugins/
@@ -156,6 +157,18 @@ Validate a plugin manifest before committing:
 ```text
 claude plugin validate ./plugins/adrs
 ```
+
+### ✅ CI
+
+[`.github/workflows/validate.yml`](./.github/workflows/validate.yml) runs on
+every PR to `main` and every push to `main`. It fails the check when any of
+these is invalid:
+
+- the marketplace: `claude plugin validate --strict .`
+- each plugin under `plugins/*/`: `claude plugin validate --strict ./plugins/<name>`
+- each ADR trio under `docs/adr/`: `validate-adr.py <stem>-0-summary.md`
+
+`claude plugin validate` runs offline, so the workflow needs no secrets.
 
 ## 📄 License
 
