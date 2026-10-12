@@ -19,17 +19,35 @@ Work out once, reuse in every step:
 
 * **Repo** — `gh repo view --json name,nameWithOwner,url,defaultBranchRef`.
   `<repo>` is the name without the owner; `<default>` is the default branch.
-* **Where the chat runs** — **local** when the desktop-app session tools are
-  available (`mcp__ccd_session_mgmt__list_sessions`, `SendMessage`; load them
-  with `ToolSearch` if they are deferred). **Cloud** when they aren't, or when
-  the `CLAUDE_CODE_REMOTE` environment variable is `true`.
-* **Chat title** — local: `mcp__ccd_session_mgmt__get_session` for this
-  session. Cloud: usually unknown; leave it empty.
+* **Where the chat runs** — check in this order, once, and reuse the answer
+  (recap and close-out must agree):
+  1. **Cloud** — the `CLAUDE_CODE_REMOTE` environment variable is `true`.
+  2. **Desktop app** — `mcp__ccd_session_mgmt__get_session` with
+     `session_id: "self"` returns this session (load it with `ToolSearch` if
+     it is deferred). Keep the result for the title.
+  3. **Local CLI** — anything else (a terminal or headless `claude`).
+
+  Only these probes decide. `ListAgents` or `SendMessage` answering doesn't
+  make a chat a desktop-app chat; CLI chats have them too. What each context
+  may do:
+
+  | Context | `SendMessage` | Remove own worktree | Archive |
+  | ------- | ------------- | ------------------- | ------- |
+  | Desktop app | yes | yes | yes |
+  | Local CLI | no | yes | no |
+  | Cloud | no | no | no |
+
+  "Local" below means desktop app or local CLI.
+* **Chat title** — desktop app: from `get_session`. Local CLI and cloud:
+  usually unknown; leave it empty.
 * **Role and topic** — a title starting with `🏷️` means this chat **is** a
   Governor. Otherwise the topic is the text before `: #<NUMBER>` in the title
   (`<topic>: #<NUMBER> <title>`). No title → no topic.
 * **This checkout** — current branch (`git branch --show-current`) and
-  worktree path (`git rev-parse --show-toplevel`). These are never cleaned up.
+  worktree path (`git rev-parse --show-toplevel`). Step 5 never cleans them
+  up; only close-out removes them, last (step 10).
+* **Main checkout** — `<main>` = the first `worktree` entry of
+  `git worktree list --porcelain`.
 
 ## 2. 🔎 Identify the issue
 
@@ -87,7 +105,7 @@ If a command refuses (dirty worktree, local commits not in the PR), **don't
 force it**. Flag it with the reason and the command Carlos can run by hand.
 `git worktree remove --force` is never used. Remote branches are not touched.
 Nothing to do → `nothing to clean`. `/workflow:close-out` reuses rule 3 when
-it removes this chat's own worktree and branch at the very end.
+it removes this chat's own worktree and branch (step 10).
 
 ## 6. ❓ Open questions and ⏳ pending actions
 
@@ -110,8 +128,9 @@ An empty list prints `none`. "Nothing pending" means both lists are empty.
 ### Find the Governor
 
 * This chat is a Governor (`🏷️`) → skip: `n/a — this is the Governor`.
-* Cloud chat → skip the lookup (no `SendMessage` back to local chats).
-* Local chat → `mcp__ccd_session_mgmt__list_sessions` (or `ListAgents`), keep
+* Cloud or local CLI chat → skip the lookup (no `SendMessage` from these
+  chats).
+* Desktop-app chat → `mcp__ccd_session_mgmt__list_sessions` (or `ListAgents`), keep
   **running** sessions only, match titles starting with `🏷️<topic>:`.
   Running = `isArchived: false`. `isRunning: false` only means the chat is
   idle between turns; it still receives messages.
@@ -123,9 +142,10 @@ An empty list prints `none`. "Nothing pending" means both lists are empty.
 
 1. **Issue comment, always.** Write the body to a temp file and run
    `gh issue comment <NUMBER> --body-file <file>`.
-2. **Local** with a Governor found → `SendMessage` to its session id with the
-   same text, without the hidden marker.
-3. **Cloud** → tell Carlos: say `sync` in the `🏷️<topic>: …` Governor chat.
+2. **Desktop app** with a Governor found → `SendMessage` to its session id
+   with the same text, without the hidden marker.
+3. **Local CLI or cloud** → `no SendMessage from a <CLI|cloud> chat`; tell
+   Carlos: say `sync` in the `🏷️<topic>: …` Governor chat.
 
 ## 8. 🏷️ Update marker
 
@@ -156,3 +176,41 @@ comments that only mention it don't match):
   `[semver#12](https://github.com/cangulo-actions/semver/issues/12)`.
   Never a bare `#N` in the chat output.
 * Single-line sections (e.g. Governor) are not indexed.
+
+## 10. 🧹 Remove this chat's worktree
+
+Used by `/workflow:close-out` only, in local chats (desktop app or local CLI),
+**after every `gh` call and file read**: once the worktree's `.git` file is
+gone, `gh` can't resolve the repo from this folder. `<path>` and `<branch>` are
+this chat's worktree and branch, `<main>` the main checkout (step 1).
+
+1. **Main checkout** — the chat runs in `<main>` → don't remove it or its
+   branch: `n/a — chat runs in the main checkout`. Stop here.
+2. **Worktree** — `git -C <main> worktree remove <path>` (**never**
+   `--force`). Judge the result by state, not by exit code:
+   * `git -C <main> worktree list --porcelain` has no `worktree <path>` entry
+     → unregistered.
+   * Still registered → it refused (dirty files, locked). Flag it with the
+     reason and the commands; skip the branch.
+3. **Locked folder (Windows)** — while this chat runs, its cwd locks
+   `<path>`: git deletes the files and unregisters the worktree, but exits
+   with `Permission denied` and leaves an empty folder. If `<path>` still
+   exists and is empty, start a hidden process from `<main>` that deletes it
+   after the session exits:
+
+   ```powershell
+   Start-Process pwsh -WorkingDirectory '<main>' -WindowStyle Hidden -ArgumentList '-NoProfile','-Command',"`$p='<path>'; for(`$i=0; `$i -lt 120 -and (Test-Path -LiteralPath `$p); `$i++){ Start-Sleep 5; Remove-Item -LiteralPath `$p -ErrorAction SilentlyContinue }"
+   ```
+
+   `Remove-Item` has no `-Recurse`, so it can only delete an empty folder;
+   the loop gives up after 10 minutes. Report
+   `removed (empty folder deleted after the session exits)`. Not empty →
+   don't start it; flag the folder.
+4. **Branch** — step 5 rule 3 with `git -C <main>` and this issue's merged PR
+   for `<branch>`. No merged PR for it → keep it and flag it. Verify:
+   `git -C <main> rev-parse --verify --quiet refs/heads/<branch>` prints
+   nothing.
+5. `git -C <main> worktree prune`.
+
+Report only what was verified: `worktree removed`, `branch deleted`, or the
+flagged item with the exact commands Carlos can run by hand.

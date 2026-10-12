@@ -31,6 +31,8 @@ the detection is also inconsistent there.
 
 **Status:** accepted
 
+**Status reason:** done in [claude-plugins#16](https://github.com/cangulo/claude-plugins/issues/16): three contexts (desktop app, local CLI, cloud) in shared step 1; see ADR [20261012-workflow-03-close-out-worktree](20261012-workflow-03-close-out-worktree-0-summary.md), which also corrects option G (archive keeps the worktree).
+
 ## 📈 Improvements
 
 ## 🌟 Nice-to-have

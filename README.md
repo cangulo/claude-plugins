@@ -63,7 +63,7 @@ python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-us
 
 Skills for the Governor/Implementator chat workflow, where each Implementator
 chat works on one GitHub issue and reports to a Governor chat (`🏷️<topic>: …`).
-They work in local (desktop app) and cloud (claude.ai/code) chats.
+They work in desktop-app, local CLI (terminal or headless) and cloud (claude.ai/code) chats.
 
 `shared/wrap-up.md` is the single source of truth for the wrap-up every skill
 runs: identify the issue (argument → branch `<N>-<type>-<slug>` → chat title),
@@ -72,8 +72,8 @@ questions and pending actions, finding the Governor, and the output rules.
 
 | Skill | What it does |
 | ----- | ------------ |
-| `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (local) or a "say sync" hint (cloud). Never edits the issue body. Runs only when typed. |
-| `/workflow:close-out [ISSUE]` | Same wrap-up; if anything is pending it stops and lists it. Otherwise it posts `#<N> closed: <title>`, makes sure the issue is closed, sets its Project Status to Done, notifies the Governor, archives the chat (local) and removes its worktree last. Runs only when typed. |
+| `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (desktop app) or a "say sync" hint (CLI, cloud). Never edits the issue body. Runs only when typed. |
+| `/workflow:close-out [ISSUE]` | Same wrap-up; if anything is pending it stops and lists it. Otherwise it posts `#<N> closed: <title>`, makes sure the issue is closed, sets its Project Status to Done, notifies the Governor, removes its worktree and merged branch (local), then archives the chat last (desktop app). Runs only when typed. |
 
 Recap detects new progress through a hidden `<!-- workflow:recap … -->` marker
 line in its last issue comment; close-out's closing comment carries it too. The
