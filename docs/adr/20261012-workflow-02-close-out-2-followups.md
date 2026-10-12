@@ -23,6 +23,9 @@ tools. A plain terminal `claude` session (e.g. `claude --plugin-dir …`) has no
 such tools, so it is treated as cloud: no `SendMessage`, no archive, no
 worktree removal, and Carlos gets "say sync" hints. Safe, but a terminal chat
 could still remove its worktree. Consider a third context, "local CLI".
+Seen in the #9 real runs: headless `claude -p` recap found sessions and
+reported "local chat", while close-out in the same setup reported cloud, so
+the detection is also inconsistent there.
 
 **Source:** agent
 
