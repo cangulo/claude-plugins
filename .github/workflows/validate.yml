@@ -1,0 +1,46 @@
+# Validates the marketplace, every plugin and every ADR trio on PRs and pushes to main.
+# `claude plugin validate` runs offline, so no API key or secret is needed.
+name: validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # Claude Code CLI from npm, on the "stable" dist-tag
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@stable
+
+      # Marketplace manifest plus each plugins/<name>/ folder (auto-discovered)
+      - name: Validate marketplace and plugins
+        run: |
+          claude --version
+          failed=0
+          claude plugin validate --strict . || failed=1
+          for plugin in plugins/*/; do
+            claude plugin validate --strict "$plugin" || failed=1
+          done
+          exit $failed
+
+      # One run per ADR trio, keyed by its summary file
+      - name: Validate ADRs
+        if: ${{ !cancelled() }}
+        run: |
+          failed=0
+          shopt -s nullglob
+          for summary in docs/adr/*-0-summary.md; do
+            python3 plugins/adrs/skills/validate/scripts/validate-adr.py "$summary" || failed=1
+          done
+          exit $failed

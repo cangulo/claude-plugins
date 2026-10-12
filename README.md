@@ -35,8 +35,9 @@ and `adr-schema.md` (what `validate` checks against).
 | `/adrs:update <path>` | Transition Status, supersede, revise the plan, or triage follow-up items, keeping the trio schema-valid. |
 
 The **summary** carries the ADR Status (`Proposed`, `Accepted`, `Rejected`,
-`Deprecated`, `Superseded`) plus front matter including `tags`,
-`continuation_of`, and `group`. The validator resolves `continuation_of` and
+`Deprecated`, `Superseded`) twice, in the `## Status` section and the
+front-matter `status`, and the validator requires both to match. Its front
+matter also includes `tags`, `continuation_of`, and `group`. The validator resolves `continuation_of` and
 `Superseded by [...]` links to make sure the referenced ADRs exist.
 
 The **follow-ups** file tracks action items *outside* the essential
@@ -112,6 +113,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 claude-plugins/
+├── .github/workflows/validate.yml    # CI: validates marketplace, plugins and ADRs
 ├── .claude-plugin/
 │   └── marketplace.json              # lists the plugins
 ├── plugins/
@@ -156,6 +158,18 @@ Validate a plugin manifest before committing:
 ```text
 claude plugin validate ./plugins/adrs
 ```
+
+### ✅ CI
+
+[`.github/workflows/validate.yml`](./.github/workflows/validate.yml) runs on
+every PR to `main` and every push to `main`. It fails the check when any of
+these is invalid:
+
+- the marketplace: `claude plugin validate --strict .`
+- each plugin under `plugins/*/`: `claude plugin validate --strict ./plugins/<name>`
+- each ADR trio under `docs/adr/`: `validate-adr.py <stem>-0-summary.md`
+
+`claude plugin validate` runs offline, so the workflow needs no secrets.
 
 ## 📄 License
 
