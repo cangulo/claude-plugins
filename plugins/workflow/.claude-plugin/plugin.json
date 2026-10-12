@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Governor/Implementator chat workflow on GitHub issues: recap a chat's work, close out its issue and notify the Governor",
   "author": {
     "name": "Carlos",
