@@ -1,0 +1,9 @@
+{
+  "name": "workflow",
+  "version": "0.1.0",
+  "description": "Governor/Implementator chat workflow on GitHub issues: recap a chat's work and notify the Governor",
+  "author": {
+    "name": "Carlos",
+    "url": "https://github.com/cangulo"
+  }
+}

@@ -2,12 +2,13 @@
 
 Personal [Claude Code plugin](https://docs.claude.com/en/docs/claude-code/plugins) marketplace by [@cangulo](https://github.com/cangulo).
 
-It hosts two plugins, each exposing its operations as auto-invocable **skills**:
+It hosts three plugins, each exposing its operations as auto-invocable **skills**:
 
 | Plugin | Skills | Purpose | Status |
 | ------ | ------ | ------- | ------ |
 | `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow | ✅ available |
 | `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki | 🚧 coming next |
+| `workflow` | `recap` | Wrap up Governor/Implementator chats on GitHub issues | ✅ available |
 
 ## 📐 `adrs` — spec-driven ADR workflow
 
@@ -57,12 +58,32 @@ a full code preview). Run the validator directly to gate CI:
 python plugins/adrs/skills/validate/scripts/validate-adr.py docs/adr/20260808-use-postgres-0-summary.md
 ```
 
+## 🧾 `workflow` — Governor/Implementator chat wrap-up
+
+Skills for the Governor/Implementator chat workflow, where each Implementator
+chat works on one GitHub issue and reports to a Governor chat (`🏷️<topic>: …`).
+They work in local (desktop app) and cloud (claude.ai/code) chats.
+
+`shared/wrap-up.md` is the single source of truth for the wrap-up every skill
+runs: identify the issue (argument → branch `<N>-<type>-<slug>` → chat title),
+work done, PRs, merged-only cleanup of this issue's branches/worktrees, open
+questions and pending actions, finding the Governor, and the output rules.
+
+| Skill | What it does |
+| ----- | ------------ |
+| `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (local) or a "say sync" hint (cloud). Never edits the issue body. Runs only when typed. |
+
+Recap detects new progress through a hidden `<!-- workflow:recap … -->` marker
+in its last issue comment. The design is in
+[docs/adr/20261012-workflow-01-shared-wrap-up](./docs/adr/20261012-workflow-01-shared-wrap-up-0-summary.md).
+
 ## 📦 Install
 
 ```text
 /plugin marketplace add cangulo/claude-plugins
 /plugin install wiki@cangulo-plugins
 /plugin install adrs@cangulo-plugins        # add --scope project to share via .claude/settings.json
+/plugin install workflow@cangulo-plugins
 ```
 
 Works in both Claude Desktop and the Claude Code CLI.
@@ -80,6 +101,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 /wiki:init
 /adrs:validate docs/adr/20260808-use-postgres-0-summary.md
 /adrs:implement docs/adr/20260808-use-postgres
+/workflow:recap 8
 ```
 
 ## 🗂️ Layout
@@ -87,7 +109,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 ```text
 claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json              # lists both plugins
+│   └── marketplace.json              # lists the plugins
 ├── plugins/
 │   ├── adrs/
 │   │   ├── .claude-plugin/plugin.json
@@ -103,8 +125,13 @@ claude-plugins/
 │   │       │   └── scripts/validate-adr.py
 │   │       ├── implement/SKILL.md
 │   │       └── update/SKILL.md
-│   └── wiki/                          # coming in the next phase
-│       └── .claude-plugin/plugin.json
+│   ├── wiki/                          # coming in the next phase
+│   │   └── .claude-plugin/plugin.json
+│   └── workflow/
+│       ├── .claude-plugin/plugin.json
+│       ├── shared/wrap-up.md          # shared wrap-up procedure
+│       └── skills/recap/SKILL.md
+├── docs/adr/                          # ADRs for this repo
 ├── README.md
 └── LICENSE
 ```
