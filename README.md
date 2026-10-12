@@ -113,7 +113,9 @@ or just describe your task and let Claude auto-invoke the matching skill:
 
 ```text
 claude-plugins/
-├── .github/workflows/validate.yml    # CI: validates marketplace, plugins and ADRs
+├── .github/
+│   ├── workflows/validate.yml        # CI: validates marketplace, plugins and ADRs
+│   └── rulesets/main.json            # branch protection for main
 ├── .claude-plugin/
 │   └── marketplace.json              # lists the plugins
 ├── plugins/
@@ -170,6 +172,29 @@ these is invalid:
 - each ADR trio under `docs/adr/`: `validate-adr.py <stem>-0-summary.md`
 
 `claude plugin validate` runs offline, so the workflow needs no secrets.
+
+### 🔒 Branch protection
+
+`main` is protected by a repository ruleset named `main`, kept as code in
+[`.github/rulesets/main.json`](./.github/rulesets/main.json):
+
+| Rule | Setting |
+| ---- | ------- |
+| Required status check | `validate` (GitHub Actions), branch must be up to date with `main` |
+| Pull request | required before merging, 0 approvals, merge method **squash** only |
+| Linear history | required |
+| Force-push / deletion | blocked |
+| Bypass | repository admins, always |
+
+The JSON is the source of truth. After editing it, apply it with `gh api`
+(create the first time, update afterwards):
+
+```text
+gh api -X POST repos/cangulo/claude-plugins/rulesets --input .github/rulesets/main.json
+gh api -X PUT  repos/cangulo/claude-plugins/rulesets/<ID> --input .github/rulesets/main.json
+```
+
+`gh api repos/cangulo/claude-plugins/rulesets` lists the rulesets and their IDs.
 
 ## 📄 License
 
