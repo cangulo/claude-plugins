@@ -15,7 +15,7 @@ Recap is **read-only** except for two actions:
 
 1. the merged-only cleanup of this issue's branches/worktrees;
 2. notifying the Governor of new progress (an issue comment, plus
-   `SendMessage` in local chats).
+   `SendMessage` in desktop-app chats; contexts per shared step 1).
 
 It **never** edits the issue body, commits, pushes, closes the issue, archives
 the chat, or touches the worktree/branch this chat runs in.
@@ -37,7 +37,7 @@ the chat, or touches the worktree/branch this chat runs in.
 4. **Notify.** Deliver the update per shared step 7. The comment body:
 
    ```markdown
-   **Recap** · <YYYY-MM-DD> · <chat title, or "cloud chat">
+   **Recap** · <YYYY-MM-DD> · <chat title, or "CLI chat" / "cloud chat">
 
    **Work done**
    - <items, new ones first>
@@ -60,7 +60,7 @@ the chat, or touches the worktree/branch this chat runs in.
    * `## ❓ Open questions` — `[oq#]` items.
    * `## ⏳ Pending actions` — `[pa#]` items.
    * `## 📣 Governor` — one line: what was sent and where (issue comment link,
-     Governor chat name, or the "say sync" instruction for cloud),
+     Governor chat name, or the "say sync" instruction for local CLI and cloud chats),
      `nothing new to report`, or `n/a — this is the Governor`.
 
    An empty list section prints `none`.

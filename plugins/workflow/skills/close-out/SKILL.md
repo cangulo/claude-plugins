@@ -15,12 +15,17 @@ is pending.
 * **Anything pending → stop.** No comment, close, Project change, notify or
   archive. The only side effect is the shared merged-only cleanup.
 * **Nothing pending → finalize** without asking for confirmation, in this
-  order: comment → issue closed → Project Done → notify → archive → worktree.
+  order: comment → issue closed → Project Done → notify → worktree and
+  branch → report → archive. **Archive is always the last action**: it ends
+  the conversation, so nothing after it would run.
 * It **never** edits the issue body, never uses `--force` on worktrees, and
   uses `git branch -D` only under the shared cleanup rule (PR `MERGED` and
   local tip equals the PR's `headRefOid`).
-* Cloud chats never `SendMessage`, archive or remove worktrees; Carlos is told
-  what to do by hand.
+* It reports only verified results. A worktree or branch it couldn't remove
+  is flagged, with the commands, before archiving.
+* Per context (shared step 1): desktop-app chats do everything; local CLI
+  chats remove their worktree but skip `SendMessage` and archive; cloud chats
+  do neither. Each skip is a clear line in the report.
 
 ## 📋 Steps
 
@@ -71,29 +76,22 @@ is pending.
       No `Status` field or `Done` option → report it and continue.
    4. **📣 Notify the Governor** per shared step 7 "Find the Governor":
       * this chat is a Governor → `n/a — this is the Governor`;
-      * local, Governor found → `SendMessage` to its session id with the
-        comment text, without the marker line;
-      * local, none found → say so; the issue comment is the channel;
-      * cloud → tell Carlos: say `sync` in the `🏷️<topic>: …` Governor chat.
-   5. **🗄️ Archive this chat.**
+      * desktop app, Governor found → `SendMessage` to its session id with
+        the comment text, without the marker line;
+      * desktop app, none found → say so; the issue comment is the channel;
+      * local CLI or cloud → `no SendMessage from a <CLI|cloud> chat`; tell
+        Carlos: say `sync` in the `🏷️<topic>: …` Governor chat.
+   5. **🧹 Remove this chat's worktree and branch.** Every `gh` call is done
+      by now. Desktop app or local CLI → shared step 10. Cloud → `n/a — cloud
+      chat`.
+   6. **🖨️ Print the report** (step 5), including the verified worktree and
+      branch result and the archive line below. Print it **before** archiving.
+   7. **🗄️ Archive this chat, last.** Nothing runs after this sub-step.
+      * Desktop app → `mcp__ccd_session_mgmt__archive_session` with
+        `session_id: "self"`. If it is refused (e.g. pinned or open on
+        screen), say so in one line.
+      * Local CLI → `archive skipped: CLI chat (no session tools)`.
       * Cloud → tell Carlos to archive the chat by hand.
-      * Local → first work out the step-6 commands and print them as a
-        fallback (archiving may end this session). Then
-        `mcp__ccd_session_mgmt__get_session` for this session and
-        `mcp__ccd_session_mgmt__archive_session` with its id.
-   6. **🧹 Remove this chat's worktree, last.** Local only; cloud → `n/a`.
-      Best-effort: any failure prints the exact command to run by hand.
-      * `<main>` = the first `worktree` entry of
-        `git worktree list --porcelain` (the main checkout). `<path>` and
-        `<branch>` = this chat's worktree and branch from shared step 1.
-      * The chat runs in `<main>` → don't remove it or its branch:
-        `n/a — chat runs in the main checkout`.
-      * `<path>` still exists → `git -C <main> worktree remove <path>`
-        (never `--force`). Already gone → `removed by archive`.
-      * Branch: apply shared step 5, rule 3 with `git -C <main>` and this
-        issue's merged PR for `<branch>`. No merged PR for it → keep it and
-        flag it.
-      * `git -C <main> worktree prune`.
 5. **Print the report** under these headings, in order:
    * `## ✅ Work done` — `[wd#]` items.
    * `## 🔀 PRs` — one line per PR, the `<repo>#<N>` link first.
@@ -102,7 +100,8 @@ is pending.
    * `## ⏳ Pending actions` — `[pa#]` items.
    * Then either `## 🚧 Before closing` (stopped) or `## 🎉 Closed out`
      (finalized), with one line per finalize step: 💬 comment link,
-     🔒 issue state, 📋 Project, 📣 Governor, 🗄️ archive, 🧹 worktree/branch
-     (or the manual command).
+     🔒 issue state, 📋 Project, 📣 Governor, 🧹 worktree/branch (verified
+     result, or the manual commands), 🗄️ archive (`archiving now` in the
+     desktop app, or why it is skipped).
 
    An empty list section prints `none`.
