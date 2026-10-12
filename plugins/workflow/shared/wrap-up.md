@@ -105,8 +105,9 @@ An empty list prints `none`. "Nothing pending" means both lists are empty.
 * This chat is a Governor (`🏷️`) → skip: `n/a — this is the Governor`.
 * Cloud chat → skip the lookup (no `SendMessage` back to local chats).
 * Local chat → `mcp__ccd_session_mgmt__list_sessions` (or `ListAgents`), keep
-  **running** sessions only (not archived or stopped), match titles starting
-  with `🏷️<topic>:`.
+  **running** sessions only, match titles starting with `🏷️<topic>:`.
+  Running = `isArchived: false`. `isRunning: false` only means the chat is
+  idle between turns; it still receives messages.
   * One match → that chat.
   * Several → ask Carlos which one.
   * None, or no topic → say so; the issue comment is the only channel.

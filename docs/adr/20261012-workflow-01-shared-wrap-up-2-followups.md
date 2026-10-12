@@ -11,6 +11,7 @@
 | Group | ID | Title | Source | Status |
 | ----- | -- | ----- | ------ | ------ |
 | Gaps | G1 | No CI in the repo | agent | accepted |
+| Improvements | I1 | Cleanup after squash merges | agent | accepted |
 
 ## 🐛 Bugs
 
@@ -29,5 +30,21 @@ checks. A workflow could run `claude plugin validate` on each plugin and
 **Status reason:** accepted as a gap: PRs currently rely on manual validation.
 
 ## 📈 Improvements
+
+### I1 — Cleanup after squash merges
+
+**Description:** This repo squash-merges PRs, so a merged PR's head commit is
+not reachable from `main` and `git branch -d` refuses to delete the branch. The
+wrap-up then only flags it with a manual command. A safe alternative: delete
+with `-D` only when the PR is merged on GitHub **and** the local tip equals the
+PR's `headRefOid` (nothing unpushed is lost). This changes the agreed
+"merged-only `git branch -d`" rule, so Carlos must decide. It also affects the
+final worktree removal in `/workflow:close-out` (#9).
+
+**Source:** agent
+
+**Status:** accepted
+
+**Status reason:** accepted as an improvement: without it, cleanup mostly ends in manual commands.
 
 ## 🌟 Nice-to-have
