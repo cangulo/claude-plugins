@@ -21,12 +21,11 @@ Accepted
 
 ## 🧭 Context and Problem Statement
 
-Carlos runs Governor/Implementator chats on GitHub issues. The Jira-based
-`recap` and `close-out` commands in the portable kit wrap up a chat, but they
-target Jira, rewrite the ticket description and only work in local chats. The
-`workflow` plugin ports them to GitHub issues as two skills, `/workflow:recap`
-(#8) and `/workflow:close-out` (#9). Both run the same wrap-up, so the question
-is how to share it, how recap knows there is new progress to report, and how
+Carlos runs Governor/Implementator chats on GitHub issues. Each chat needs a
+wrap-up that summarizes its work without rewriting the issue body, and that
+works in local and cloud chats. The `workflow` plugin provides two skills,
+`/workflow:recap` (#8) and `/workflow:close-out` (#9). Both run the same
+wrap-up, so the question is how to share it, how recap knows there is new progress to report, and how
 the skills behave in local and cloud chats.
 
 ## 📋 Requirements

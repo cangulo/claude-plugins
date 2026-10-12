@@ -25,9 +25,8 @@ Accepted
 ADR 01 added `shared/wrap-up.md` and `/workflow:recap`. An Implementator chat
 also needs to end cleanly: once its issue is done, post the closing comment,
 make sure the issue and its Project item are closed, tell the Governor, archive
-the chat and remove its worktree. The portable kit's Jira `close-out.md` does
-this for Jira; #9 ports it to GitHub issues on top of the shared wrap-up. The
-questions are how close-out reuses the wrap-up, how it decides "nothing
+the chat and remove its worktree. #9 adds this on top of the shared wrap-up.
+The questions are how close-out reuses the wrap-up, how it decides "nothing
 pending", and how it removes the worktree the chat itself runs in.
 
 ## 📋 Requirements
