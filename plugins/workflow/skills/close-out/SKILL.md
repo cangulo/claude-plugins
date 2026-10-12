@@ -1,8 +1,7 @@
 ---
 name: close-out
-description: Wrap up this chat's work on a GitHub issue and, if nothing is pending, post the closing comment, close the issue, set its Project to Done, notify the Governor, archive the chat and remove its worktree.
+description: Wrap up this chat's work on a GitHub issue and, if nothing is pending, post the closing comment, close the issue, set its Project to Done, notify the Governor, remove its worktree and archive the chat last. Use it once the issue's final PR (the one with `Closes #N`) has merged and the issue is closed, when the Governor or Carlos asks to close out, or whenever finishing the issue fits the conversation. Stops and lists what is left if anything is pending.
 argument-hint: "[ISSUE]"
-disable-model-invocation: true
 ---
 
 # 🏁 workflow:close-out — finish this chat's issue
@@ -12,6 +11,9 @@ is pending.
 
 ## 🛡️ Guarantees
 
+* **Same run, typed or automatic.** When Claude invokes it on its own, it
+  keeps the pending guard and, when nothing is pending, does the full
+  finalize, archive included, exactly as when Carlos types it.
 * **Anything pending → stop.** No comment, close, Project change, notify or
   archive. The only side effect is the shared merged-only cleanup.
 * **Nothing pending → finalize** without asking for confirmation, in this
@@ -44,12 +46,12 @@ is pending.
       `gh issue comment <NUMBER> --body-file <file>`:
 
       ```markdown
-      #<NUMBER> closed: <issue title>
+      ISSUE#<NUMBER> closed: <issue title>
 
       **Summary**
       - <work done items>
 
-      **Merged PRs:** #<PR>, #<PR>
+      **Merged PRs:** [PR#<N>](<url>), [PR#<N>](<url>)
 
       **Follow-ups**
       - <items added to the ADR follow-ups file or the issue summary, or "none">
@@ -57,8 +59,10 @@ is pending.
       <!-- workflow:recap head=<short-sha> prs=<PR>:<STATE>,… -->
       ```
 
-      The first line is exactly `#<NUMBER> closed: <title>`, using the title
-      from `gh`. The last line is the shared update marker (step 8). If the
+      The first line is exactly `ISSUE#<NUMBER> closed: <title>` (plain text,
+      no link, so the Governor can match it; `EPIC#` if the issue's type is
+      `Epic`), using the title from `gh`.
+      Every other PR or issue follows the shared link rule (step 9). The last line is the shared update marker (step 8). If the
       comment fails, stop here: the issue isn't closed without its summary.
    2. **🔒 Issue closed.** `gh issue view <NUMBER> --json state`. Usually
       already `CLOSED` by the final PR's `Closes #<NUMBER>` → `already closed`.
@@ -94,7 +98,8 @@ is pending.
       * Cloud → tell Carlos to archive the chat by hand.
 5. **Print the report** under these headings, in order:
    * `## ✅ Work done` — `[wd#]` items.
-   * `## 🔀 PRs` — one line per PR, the `<repo>#<N>` link first.
+   * `## 🔀 PRs` — one line per PR, the `PR#<N>` link first (shared link
+     rule).
    * `## 🧹 Cleanup` — `[cl#]` items, or `nothing to clean`.
    * `## ❓ Open questions` — `[oq#]` items.
    * `## ⏳ Pending actions` — `[pa#]` items.

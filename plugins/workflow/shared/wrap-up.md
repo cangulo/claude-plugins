@@ -3,7 +3,8 @@
 The single source of truth for wrapping up a chat in the Governor/Implementator
 workflow. `/workflow:recap` and `/workflow:close-out` read this file, run the
 steps below, then add their own steps on top. Change the shared behaviour
-here, never in a skill.
+here, never in a skill. Both skills run when Carlos types them or when Claude
+invokes them on its own (triggers in each skill's `description`).
 
 ## 🛡️ Ground rules
 
@@ -17,8 +18,13 @@ here, never in a skill.
 
 Work out once, reuse in every step:
 
-* **Repo** — `gh repo view --json name,nameWithOwner,url,defaultBranchRef`.
-  `<repo>` is the name without the owner; `<default>` is the default branch.
+* **Repo** — `gh repo view --json name,owner,url,defaultBranchRef`.
+  `<owner>` is the owner login, `<repo>` the name without the owner (the
+  chat's **own repo** for the link rule, step 9); `<default>` is the default
+  branch.
+* **Invocation** — `typed` when Carlos typed the skill (`/workflow:<skill>`),
+  `auto` when Claude invoked it on its own. Both run the same steps; only
+  recap's new-progress rule differs.
 * **Where the chat runs** — check in this order, once, and reuse the answer
   (recap and close-out must agree):
   1. **Cloud** — the `CLAUDE_CODE_REMOTE` environment variable is `true`.
@@ -99,7 +105,16 @@ repo-wide sweep. For each merged PR, with `<branch>` = its head branch:
    (squash merges), use `git branch -D <branch>` **only when** the PR's `gh`
    state is `MERGED` **and** `git rev-parse refs/heads/<branch>` equals the
    PR's `headRefOid` (nothing unpushed is lost). Otherwise don't delete.
-4. Run `git worktree prune` once at the end.
+4. **Detached worktrees** — left by close-outs before 0.3.0, which archived
+   the chat first. For each `git worktree list --porcelain` entry with a
+   `detached` line, other than this chat's worktree and `<main>`:
+   * its `HEAD` equals the full `headRefOid` of one of this issue's merged
+     PRs **and** `git -C <path> status --porcelain` prints nothing → run
+     `git worktree remove <path>` (**never** `--force`);
+   * same `HEAD` but dirty, or the remove refuses → flag it with the reason
+     and the command;
+   * any other `HEAD` → not this issue's; leave it and don't list it.
+5. Run `git worktree prune` once at the end.
 
 If a command refuses (dirty worktree, local commits not in the PR), **don't
 force it**. Flag it with the reason and the command Carlos can run by hand.
@@ -171,11 +186,31 @@ comments that only mention it don't match):
   `[wd#]` work done, `[cl#]` cleanup, `[oq#]` open questions,
   `[pa#]` pending actions, e.g. `- [pa1] …`.
 * In the PRs section the PR link itself is the item id (no code).
-* Every PR or issue is a link whose text is `<repo>#<N>` **without the owner**,
-  using the URL from `gh`, e.g.
-  `[semver#12](https://github.com/cangulo-actions/semver/issues/12)`.
-  Never a bare `#N` in the chat output.
 * Single-line sections (e.g. Governor) are not indexed.
+
+### 🔗 Link rule
+
+Applies to the chat output **and** every comment a workflow skill posts.
+
+* Every PR or issue is a link to its URL from `gh`. The link text names the
+  object type:
+  * pull request → `PR#<N>`;
+  * issue of GitHub issue type `Epic` → `EPIC#<N>`;
+  * any other issue → `ISSUE#<N>`.
+* Own repo (step 1) → no prefix, e.g.
+  `[ISSUE#8](https://github.com/cangulo/claude-plugins/issues/8)`. Other
+  repos → `<repo>/` without the owner, e.g.
+  `[semver/PR#12](https://github.com/cangulo-actions/semver/pull/12)`.
+* Issue type — once per issue per run:
+
+  ```text
+  gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){issue(number:$n){issueType{name}}}}' -F o=<owner> -F r=<repo> -F n=<N>
+  ```
+
+  `null` (personal repos have no issue types) or an error → `ISSUE#<N>`.
+* Never a bare `#N`. Native `#N` stays only where GitHub needs it: closing
+  keywords (`Closes #N`, `Part of #N`), commit messages, PR titles and
+  branch names. The hidden update marker (step 8) keeps its own format.
 
 ## 10. 🧹 Remove this chat's worktree
 

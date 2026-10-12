@@ -1,8 +1,7 @@
 ---
 name: recap
-description: Summarize this chat's work on a GitHub issue (work done, PRs, cleanup, open questions, pending actions) and notify the Governor chat of new progress. Read-only apart from merged-only cleanup and the update comment.
+description: Summarize this chat's work on a GitHub issue (work done, PRs, cleanup, open questions, pending actions) and notify the Governor chat of new progress. Use it after pushing to a PR once its CI is green, when the Governor or Carlos asks for a recap or status, or whenever a wrap-up of the issue's progress fits the conversation. Read-only apart from merged-only cleanup and the update comment; posts nothing when nothing changed.
 argument-hint: "[ISSUE]"
-disable-model-invocation: true
 ---
 
 # 🧾 workflow:recap — wrap up this chat's work
@@ -30,9 +29,11 @@ the chat, or touches the worktree/branch this chat runs in.
    * This chat is a Governor → skip to step 5 (`n/a — this is the Governor`).
    * Find the latest update marker on the issue (shared step 8).
    * **New progress** when there is no marker yet and the chat has work done,
-     or when `head` or any PR state differs from the marker, or when the work
-     done has items the last update comment doesn't mention (e.g. decisions,
-     answered questions).
+     or when `head` or any PR state differs from the marker.
+   * `typed` runs (shared step 1) also count work done that the last update
+     comment doesn't mention (e.g. decisions, answered questions). `auto` runs
+     don't, so repeated automatic recaps stay silent until a push or a PR
+     state change.
    * Otherwise → `nothing new to report`; skip step 4.
 4. **Notify.** Deliver the update per shared step 7. The comment body:
 
@@ -43,7 +44,7 @@ the chat, or touches the worktree/branch this chat runs in.
    - <items, new ones first>
 
    **PRs**
-   - #<PR> <title> — <state>
+   - [PR#<N>](<url>) <title> — <state>
 
    **Pending**
    - <pending actions and open questions, or "Nothing pending.">
@@ -51,10 +52,11 @@ the chat, or touches the worktree/branch this chat runs in.
    <!-- workflow:recap head=<short-sha> prs=<PR>:<STATE>,… -->
    ```
 
-   In the comment, GitHub auto-links `#N`, so plain `#N` is fine there.
+   Every PR or issue in the comment follows the shared link rule (step 9).
 5. **Print the report** under these headings, in order:
    * `## ✅ Work done` — `[wd#]` items.
-   * `## 🔀 PRs` — one line per PR, the `<repo>#<N>` link first.
+   * `## 🔀 PRs` — one line per PR, the `PR#<N>` link first (shared link
+     rule).
    * `## 🧹 Cleanup` — `[cl#]` items (removed, kept, flagged), or
      `nothing to clean`.
    * `## ❓ Open questions` — `[oq#]` items.

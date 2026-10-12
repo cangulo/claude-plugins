@@ -85,14 +85,27 @@ questions and pending actions, finding the Governor, and the output rules.
 
 | Skill | What it does |
 | ----- | ------------ |
-| `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (desktop app) or a "say sync" hint (CLI, cloud). Never edits the issue body. Runs only when typed. |
-| `/workflow:close-out [ISSUE]` | Same wrap-up; if anything is pending it stops and lists it. Otherwise it posts `#<N> closed: <title>`, makes sure the issue is closed, sets its Project Status to Done, notifies the Governor, removes its worktree and merged branch (local), then archives the chat last (desktop app). Runs only when typed. |
+| `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (desktop app) or a "say sync" hint (CLI, cloud). Never edits the issue body. Claude runs it on its own after a PR push once CI is green; an automatic run posts only when the branch head or a PR state changed. |
+| `/workflow:close-out [ISSUE]` | Same wrap-up; if anything is pending it stops and lists it. Otherwise it posts `#<N> closed: <title>`, makes sure the issue is closed, sets its Project Status to Done, notifies the Governor, removes its worktree and merged branch (local), then archives the chat last (desktop app). Claude runs it on its own once the final PR (`Closes #N`) merges and the issue is closed: same guard, same full finalize as when typed. |
+
+Both skills also run when the Governor or Carlos asks ("recap", "close
+out"), and can always be typed. Links in the chat output and in the comments
+they post name the object type: `PR#N`, `EPIC#N` (issue type `Epic`) or
+`ISSUE#N`, with a `repo/` prefix for other repos (e.g. `semver/PR#12`).
+Cleanup also removes clean detached worktrees whose `HEAD` is one of the
+issue's merged PR heads (left by close-outs before 0.3.0).
 
 Recap detects new progress through a hidden `<!-- workflow:recap … -->` marker
-line in its last issue comment; close-out's closing comment carries it too. The
-design is in
-[wiki/20261012-workflow-01-shared-wrap-up](./wiki/20261012-workflow-01-shared-wrap-up-0-summary.md)
-and [wiki/20261012-workflow-02-close-out](./wiki/20261012-workflow-02-close-out-0-summary.md).
+line in its last issue comment; close-out's closing comment carries it too.
+
+> A running chat keeps the plugin version it loaded when it started. After
+> updating the plugin, reload or restart the chat to use the new skills.
+
+The design is in
+[wiki/20261012-workflow-01-shared-wrap-up](./wiki/20261012-workflow-01-shared-wrap-up-0-summary.md),
+[wiki/20261012-workflow-02-close-out](./wiki/20261012-workflow-02-close-out-0-summary.md),
+[wiki/20261012-workflow-03-close-out-worktree](./wiki/20261012-workflow-03-close-out-worktree-0-summary.md)
+and [wiki/20261012-workflow-04-auto-invoke-links](./wiki/20261012-workflow-04-auto-invoke-links-0-summary.md).
 
 ## 📦 Install
 
