@@ -1,6 +1,6 @@
 ---
 name: update
-description: Update an existing Architecture Decision Record (ADR) — change its Status, supersede it, revise the plan, or triage follow-up items. Use when the user asks to accept, reject, deprecate, supersede, amend, or edit an existing ADR under docs/adr, or to add/triage items in its follow-ups, while keeping the trio schema-valid.
+description: Update an existing Architecture Decision Record (ADR) — change its Status, supersede it, revise the plan, or triage follow-up items. Use when the user asks to accept, reject, deprecate, supersede, amend, or edit an existing ADR in the repo's ADR folder, or to add/triage items in its follow-ups, while keeping the trio schema-valid.
 ---
 
 # ✏️ adrs:update — revise an existing ADR
@@ -11,8 +11,11 @@ whichever file(s) a change affects and always leaving the trio valid against
 
 ## 📋 Steps
 
+0. **Resolve the ADR folder** (`<adr-folder>`) per
+   `${CLAUDE_PLUGIN_ROOT}/shared/adr-folder.md` and print it with its source.
+
 1. **Resolve the ADR.** Use the path/stem the user provided. If none, list
-   `docs/adr/` and ask which ADR to update.
+   `<adr-folder>` and ask which ADR to update.
 
 2. **Identify the change** and edit the right file:
 

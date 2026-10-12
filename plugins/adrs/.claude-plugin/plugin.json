@@ -1,6 +1,6 @@
 {
   "name": "adrs",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Spec-driven ADR workflow: create, validate, implement, and update ADRs",
   "author": {
     "name": "Carlos",

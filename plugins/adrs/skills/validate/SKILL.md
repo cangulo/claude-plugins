@@ -1,6 +1,6 @@
 ---
 name: validate
-description: Validate an Architecture Decision Record (ADR) against the ADR schema. Use when the user asks to validate, check, lint, or verify an ADR under docs/adr, or wants to confirm an ADR's summary, plan, and follow-ups files have the required structure, a valid Status, and well-formed follow-up items.
+description: Validate an Architecture Decision Record (ADR) against the ADR schema. Use when the user asks to validate, check, lint, or verify an ADR in the repo's ADR folder, or wants to confirm an ADR's summary, plan, and follow-ups files have the required structure, a valid Status, and well-formed follow-up items.
 ---
 
 # 🔍 adrs:validate — check an ADR trio against the schema
@@ -12,10 +12,14 @@ always validates the whole trio.
 
 ## 📋 Steps
 
+0. **Resolve the ADR folder** (`<adr-folder>`) per
+   `${CLAUDE_PLUGIN_ROOT}/shared/adr-folder.md` and print it with its source.
+
 1. **Resolve the target ADR.** Use the path the user provided — it may be any
-   one of the trio files (e.g. `docs/adr/20260808-use-postgres-1-plan.md`) or the
-   bare stem (`docs/adr/20260808-use-postgres`). The script derives the stem and
-   checks all three files. If no ADR is given, ask which one to validate.
+   one of the trio files (e.g. `<adr-folder>/20260808-use-postgres-1-plan.md`) or
+   the bare stem (`<adr-folder>/20260808-use-postgres`). The script derives the
+   stem and checks all three files. If no ADR is given, list `<adr-folder>` and
+   ask which one to validate.
 
 2. **Run the validator:**
 

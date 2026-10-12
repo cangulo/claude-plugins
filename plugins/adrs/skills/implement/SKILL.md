@@ -13,8 +13,11 @@ that edits application code.
 
 ## 📋 Steps
 
+0. **Resolve the ADR folder** (`<adr-folder>`) per
+   `${CLAUDE_PLUGIN_ROOT}/shared/adr-folder.md` and print it with its source.
+
 1. **Resolve the ADR.** Use the path/stem the user provided. If none, list
-   `docs/adr/` and ask which ADR to implement.
+   `<adr-folder>` and ask which ADR to implement.
 
 2. **Validate first.** Run `adrs:validate` on the ADR (or the script at
    `${CLAUDE_PLUGIN_ROOT}/skills/validate/scripts/validate-adr.py`). If the trio

@@ -8,7 +8,8 @@ instances of this schema.
 ## 🗃️ An ADR is a trio of files
 
 One ADR is composed of **three files** that share the same stem
-`YYYYMMDD-title` and live together under `docs/adr/`:
+`YYYYMMDD-title` and live together, flat, in the repo's ADR folder
+(`<adr-folder>`, resolved per [`adr-folder.md`](adr-folder.md), e.g. `wiki/`):
 
 | File                          | Role |
 | ----------------------------- | ---- |
@@ -34,9 +35,9 @@ The stem is `YYYYMMDD-title`, or the optional **grouped** form
 * Suffix — exactly one of `-0-summary`, `-1-plan`, `-2-followups`, then `.md`.
   The leading index (`0`/`1`/`2`) makes a directory listing sort in the logical
   reading order: summary → plan → follow-ups.
-* Simple example trio: `docs/adr/20260808-use-postgres-0-summary.md`,
+* Simple example trio: `<adr-folder>/20260808-use-postgres-0-summary.md`,
   `…-use-postgres-1-plan.md`, `…-use-postgres-2-followups.md`.
-* Grouped example: `docs/adr/20260808-auth-01-use-oauth-0-summary.md`
+* Grouped example: `<adr-folder>/20260808-auth-01-use-oauth-0-summary.md`
   (group `auth`, index `01`, title `use-oauth`).
 
 ## 🧾 Summary front matter
@@ -55,7 +56,7 @@ and it MUST match the value the `## Status` section starts with (e.g.
 `status: "Superseded"` with `Superseded by [...]`). The validator also checks
 metadata **when it can**: `tags` must be a YAML array, and every
 `continuation_of` reference (and any `Superseded by [...]` link in the Status)
-must resolve to a summary file that exists under `docs/adr/`. Other
+must resolve to a summary file that exists in the same folder as the ADR. Other
 front-matter fields are free-form.
 
 ## 🚦 Status (in the summary)

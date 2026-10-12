@@ -35,7 +35,7 @@ the wrong comment. Anchor it to a marker line.
 
 **Description:** The repo has no GitHub Actions workflows, so PRs have no
 checks. A workflow could run `claude plugin validate` on each plugin and
-`validate-adr.py` on `docs/adr/*-0-summary.md`.
+`validate-adr.py` on `wiki/*-0-summary.md`.
 
 **Source:** agent
 
