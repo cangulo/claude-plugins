@@ -1,9 +1,9 @@
 # 🧾 Shared wrap-up procedure
 
 The single source of truth for wrapping up a chat in the Governor/Implementator
-workflow. `/workflow:recap` (and later `/workflow:close-out`) read this file,
-run the steps below, then add their own steps on top. Change the shared
-behaviour here, never in a skill.
+workflow. `/workflow:recap` and `/workflow:close-out` read this file, run the
+steps below, then add their own steps on top. Change the shared behaviour
+here, never in a skill.
 
 ## 🛡️ Ground rules
 
@@ -86,7 +86,8 @@ repo-wide sweep. For each merged PR, with `<branch>` = its head branch:
 If a command refuses (dirty worktree, local commits not in the PR), **don't
 force it**. Flag it with the reason and the command Carlos can run by hand.
 `git worktree remove --force` is never used. Remote branches are not touched.
-Nothing to do → `nothing to clean`.
+Nothing to do → `nothing to clean`. `/workflow:close-out` reuses rule 3 when
+it removes this chat's own worktree and branch at the very end.
 
 ## 6. ❓ Open questions and ⏳ pending actions
 
@@ -98,7 +99,8 @@ Computed **after** cleanup.
   * an open or draft PR;
   * failing or running CI, requested changes, unresolved review comments;
   * blocked items (e.g. the issue's "blocked by" list still open);
-  * unchecked acceptance criteria not covered by a merged PR;
+  * an acceptance criterion the merged PRs clearly don't satisfy, named
+    explicitly. Unchecked boxes alone are **not** pending: nobody ticks them.
   * cleanup items flagged in step 5.
 
 An empty list prints `none`. "Nothing pending" means both lists are empty.
@@ -127,7 +129,8 @@ An empty list prints `none`. "Nothing pending" means both lists are empty.
 
 ## 8. 🏷️ Update marker
 
-Every update comment posted by a workflow skill ends with one hidden line:
+Every update comment posted by a workflow skill (recap's update and
+close-out's closing comment) ends with one hidden line:
 
 ```text
 <!-- workflow:recap head=<short-sha> prs=<PR>:<STATE>,<PR>:<STATE> -->
@@ -137,8 +140,9 @@ Every update comment posted by a workflow skill ends with one hidden line:
 * `prs` — the issue's PRs from step 4, sorted by number, with the `gh` state
   (`OPEN`, `MERGED`, `CLOSED`; `DRAFT` for draft PRs). Empty when none: `prs=`.
 
-Latest marker comment:
-`gh issue view <NUMBER> --json comments --jq '[.comments[] | select(.body | contains("<!-- workflow:recap"))] | last'`.
+Latest marker comment (anchored to a line that starts with the marker, so
+comments that only mention it don't match):
+`gh issue view <NUMBER> --json comments --jq '[.comments[] | select(.body | test("(?m)^<!-- workflow:recap head="))] | last'`.
 
 ## 9. 🖨️ Output rules
 

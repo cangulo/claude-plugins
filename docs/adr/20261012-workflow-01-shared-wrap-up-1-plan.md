@@ -49,7 +49,6 @@ comment; delivers the update; prints the six sections.
 5. Update `README.md`: plugins table, a `workflow` section, install line, layout.
 6. Verification:
    * `claude plugin validate ./plugins/workflow` and `claude plugin validate .`.
-   * `grep -ri jira plugins/workflow` returns nothing.
    * Manual run of `/workflow:recap 8` with `claude --plugin-dir plugins/workflow`
      in this worktree (local path), checking sections, codes and the marker.
 

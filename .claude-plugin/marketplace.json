@@ -19,7 +19,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Governor/Implementator chat workflow on GitHub issues: recap a chat's work and notify the Governor"
+      "description": "Governor/Implementator chat workflow on GitHub issues: recap a chat's work, close out its issue and notify the Governor"
     }
   ]
 }

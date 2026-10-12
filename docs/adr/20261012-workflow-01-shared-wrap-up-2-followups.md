@@ -11,9 +11,23 @@
 | Group | ID | Title | Source | Status |
 | ----- | -- | ----- | ------ | ------ |
 | Gaps | G1 | No CI in the repo | agent | accepted |
+| Bugs | B1 | Marker lookup matches mentions | review | accepted |
 | Improvements | I1 | Cleanup after squash merges | agent | accepted |
 
 ## 🐛 Bugs
+
+### B1 — Marker lookup matches mentions
+
+**Description:** The update-marker lookup
+`select(.body | contains("<!-- workflow:recap"))` also matches comments that
+only mention the marker (e.g. a PR summary), so recap could compare against
+the wrong comment. Anchor it to a marker line.
+
+**Source:** review
+
+**Status:** accepted
+
+**Status reason:** done in [claude-plugins#9](https://github.com/cangulo/claude-plugins/issues/9): shared/wrap-up.md step 8 now uses `test("(?m)^<!-- workflow:recap head=")`.
 
 ## 🕳️ Gaps
 

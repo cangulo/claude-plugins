@@ -8,7 +8,7 @@ It hosts three plugins, each exposing its operations as auto-invocable **skills*
 | ------ | ------ | ------- | ------ |
 | `adrs` | `init`, `validate`, `implement`, `update` | Spec-driven Architecture Decision Record workflow | ✅ available |
 | `wiki` | `init`, `update`, `validate` | Initialize, update, and validate a repository wiki | 🚧 coming next |
-| `workflow` | `recap` | Wrap up Governor/Implementator chats on GitHub issues | ✅ available |
+| `workflow` | `recap`, `close-out` | Wrap up Governor/Implementator chats on GitHub issues | ✅ available |
 
 ## 📐 `adrs` — spec-driven ADR workflow
 
@@ -72,10 +72,13 @@ questions and pending actions, finding the Governor, and the output rules.
 | Skill | What it does |
 | ----- | ------------ |
 | `/workflow:recap [ISSUE]` | Wrap-up of this chat's work. Read-only apart from the cleanup and, on new progress, an issue comment plus a `SendMessage` to the Governor (local) or a "say sync" hint (cloud). Never edits the issue body. Runs only when typed. |
+| `/workflow:close-out [ISSUE]` | Same wrap-up; if anything is pending it stops and lists it. Otherwise it posts `#<N> closed: <title>`, makes sure the issue is closed, sets its Project Status to Done, notifies the Governor, archives the chat (local) and removes its worktree last. Runs only when typed. |
 
 Recap detects new progress through a hidden `<!-- workflow:recap … -->` marker
-in its last issue comment. The design is in
-[docs/adr/20261012-workflow-01-shared-wrap-up](./docs/adr/20261012-workflow-01-shared-wrap-up-0-summary.md).
+line in its last issue comment; close-out's closing comment carries it too. The
+design is in
+[docs/adr/20261012-workflow-01-shared-wrap-up](./docs/adr/20261012-workflow-01-shared-wrap-up-0-summary.md)
+and [docs/adr/20261012-workflow-02-close-out](./docs/adr/20261012-workflow-02-close-out-0-summary.md).
 
 ## 📦 Install
 
@@ -102,6 +105,7 @@ or just describe your task and let Claude auto-invoke the matching skill:
 /adrs:validate docs/adr/20260808-use-postgres-0-summary.md
 /adrs:implement docs/adr/20260808-use-postgres
 /workflow:recap 8
+/workflow:close-out 9
 ```
 
 ## 🗂️ Layout
@@ -130,7 +134,9 @@ claude-plugins/
 │   └── workflow/
 │       ├── .claude-plugin/plugin.json
 │       ├── shared/wrap-up.md          # shared wrap-up procedure
-│       └── skills/recap/SKILL.md
+│       └── skills/
+│           ├── recap/SKILL.md
+│           └── close-out/SKILL.md
 ├── docs/adr/                          # ADRs for this repo
 ├── README.md
 └── LICENSE
